@@ -1,8 +1,0 @@
-{
-    "port": "/dev/tty.usbserial-14110",
-    "configuration": "cpu=atmega328old",
-    "board": "arduino:avr:nano",
-    "programmer": "avrispmkii",
-    "output": "../build",
-    "sketch": "spider_bot.ino"
-}
