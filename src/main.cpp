@@ -20,12 +20,8 @@ void loop(){
 }
 
 int main(){
-  // pwm.begin();
-  // pwm.setOscillatorFrequency(27000000);
-  g.pwm.set_pwm_freq(50);
 
-  // Serial.begin(9600);
-  // Serial.println("Setup");
+  g.pwm.set_pwm_freq(50);
 
   leg = new MLeg(SIDE::LEFT, LEG::OTHER);
   // leg->set_debug(1);

@@ -1,5 +1,5 @@
 #include "mservo.h"
-#include "globals.h"
+#include "global.h"
 #include "debuggable.h"
 
 extern Global g;

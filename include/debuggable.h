@@ -20,7 +20,7 @@ public:
     if(ret && strlen(str) != 0 && val == -1){
       printf("%s\n",str);
     } else if(ret && strlen(str) != 0){
-      printf("%s%d\n",str,val);
+      printf("%s%f\n",str,val);
     }
     return ret;
   }

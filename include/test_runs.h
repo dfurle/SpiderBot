@@ -5,18 +5,18 @@
 extern Global g;
 
 
-void test_INIT_TO_LIMITS(){
-  printf("INIT TO LIMITS\n");
-  for(int j = 0; j < 16; j++){
-    if(j%4 == 0) // INNER
-      // pwm.setPWM(j,0,LMID);
-      g.pwm.set_pwm(j,0,(LMAX-LMIN)*0.5);
-    else if(j%4 == 1) // MIDDLE
-      g.pwm.set_pwm(j,0,LMAX);
-    else if(j%4 == 2) // OUTER
-      g.pwm.set_pwm(j,0,LMIN);
-  }
-}
+// void test_INIT_TO_LIMITS(){
+//   printf("INIT TO LIMITS\n");
+//   for(int j = 0; j < 16; j++){
+//     if(j%4 == 0) // INNER
+//       // pwm.setPWM(j,0,LMID);
+//       g.pwm.set_pwm(j,0,(LMAX-LMIN)*0.5);
+//     else if(j%4 == 1) // MIDDLE
+//       g.pwm.set_pwm(j,0,LMAX);
+//     else if(j%4 == 2) // OUTER
+//       g.pwm.set_pwm(j,0,LMIN);
+//   }
+// }
 
 // Drives specific servo to inputted angle by user
 // TODO: make work with rpi

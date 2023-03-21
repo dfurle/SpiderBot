@@ -62,7 +62,7 @@ void MLeg::set_catesian(float x, float y, float height){
 void MLeg::test_set_r(float r, float height){
 
   if(debug(3)){
-    printf("Angles: r=%d\n",r);
+    printf("Angles: r=%f\n",r);
   }
 
   // Could just set inside calcAngles so can reduce to 1 line

@@ -1,7 +1,6 @@
 #pragma once
 
-// #include <Adafruit_PWMServoDriver.h>
-#include <PiPCA9685/PCA9685.h>
+#include <PCA/PCA9685.h>
 #include <string.h>
 #include <cmath>
 #include <unistd.h>
@@ -27,36 +26,19 @@ enum class PART{ INNER, MIDDLE, OUTER, OTHER };
 
 class Global{
 public:
+  Global();
 
-  Global(){
-
-  }
-  
-  int hard_limits[4][2] = {
+  const int hard_limits[4][2] = {
     {0, 90}, // INNER
     {45, 180}, // MIDDLE
     {0, 120}, // OUTER
     {0,0} // ignore
   };
 
-
   PiPCA9685::PCA9685 pwm{};
-
-
   template<class T>
-  const T& constrain(const T& x, const T& a, const T& b) {
-    if(x < a) {
-      return a;
-    }
-    else if(b < x) {
-      return b;
-    }
-    else
-      return x;
-  }
-
-  long map(long x, long in_min, long in_max, long out_min, long out_max) {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-  }
+  const T& constrain(const T& x, const T& a, const T& b);
+  long map(long x, long in_min, long in_max, long out_min, long out_max);
 };
 
+// Global g;
