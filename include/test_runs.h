@@ -1,62 +1,70 @@
 #pragma once
 #include "mservo.h"
 #include "mleg.h"
+#include <iostream>
 
 extern Global g;
 
+void test_INIT_MID_CONST(MLeg* l){
+  printf("INIT TO MID constrained\n");
+  l->i.set(0);
+  l->m.set(90);
+  l->o.set(90);
+}
 
-// void test_INIT_TO_LIMITS(){
-//   printf("INIT TO LIMITS\n");
-//   for(int j = 0; j < 16; j++){
-//     if(j%4 == 0) // INNER
-//       // pwm.setPWM(j,0,LMID);
-//       g.pwm.set_pwm(j,0,(LMAX-LMIN)*0.5);
-//     else if(j%4 == 1) // MIDDLE
-//       g.pwm.set_pwm(j,0,LMAX);
-//     else if(j%4 == 2) // OUTER
-//       g.pwm.set_pwm(j,0,LMIN);
-//   }
-// }
+
+void test_INIT_MAX_CONST(MLeg* l){
+  printf("INIT TO MAX constrained\n");
+  l->i.set(90);
+  l->m.set(180);
+  l->o.set(180);
+}
+
+
+void test_INIT_MIN_CONST(MLeg* l){
+  printf("INIT TO MIN constrained\n");
+  l->i.set(-90);
+  l->m.set(0);
+  l->o.set(0);
+}
+
 
 // Drives specific servo to inputted angle by user
 // TODO: make work with rpi
 void test_DRIVE_TO_INPUT(MLeg* leg){
-  // while(Serial.available() == 0){}
+  int motor;
+  int pos;
+  std::cin >> motor;
+  std::cin >> pos;
 
-  // int which = Serial.parseInt();
-  // int pos = Serial.parseInt();
-
-  // if(which == -1){
-  //   leg->i.set(0);
-  //   leg->m.set(0);
-  //   leg->o.set(0);
-  // } else if(which == 0)
-  //   leg->i.set(pos);
-  // else if(which == 1)
-  //   leg->m.set(pos);
-  // else if(which == 2)
-  //   leg->o.set(pos);
-
-  // delay(1000);
+  if(motor == -1){
+    leg->i.set(0);
+    leg->m.set(0);
+    leg->o.set(0);
+  } else if(motor == 0)
+    leg->i.set(pos);
+  else if(motor == 1)
+    leg->m.set(pos);
+  else if(motor == 2)
+    leg->o.set(pos);
 }
 
 
 // Drives specific servo to cartesian coords by user
 // TODO: Make work with RPI
 void test_DRIVE_TO_XYZ(MLeg* leg){
-  // while(Serial.available() == 0){}
+  int x, y, z;
+  std::cin >> x;
+  std::cin >> y;
+  std::cin >> z;
 
-  // int x = Serial.parseInt();
-  // int y = Serial.parseInt();
-  // int z = Serial.parseInt();
-
-  // leg->set_catesian(x,y,z);
-  // delay(1000);
+  leg->set_catesian(x,y,z);
 }
 
 void test_LOOP_R_INCREASE(MLeg* leg, long speed_delay = 30, float height = 45){
   int min = 1;
-  int max = sqrt((MID_L+OUT_L)*(MID_L+OUT_L)-(height*height)) + INN_L - 1;
+  int max = sqrt((MID_L+OUT_L)*(MID_L+OUT_L)-(height*height)) - 1;
+  printf("max: %d\n",max);
   for(int j = min; j <= max; j+=2){
     leg->test_set_r(j, height);
     usleep(speed_delay * 1000);
@@ -69,9 +77,10 @@ void test_LOOP_R_INCREASE(MLeg* leg, long speed_delay = 30, float height = 45){
   usleep(100000);
 }
 
-void test_LOOP_Y_INCREASE(MLeg* leg, float x = 70, long speed_delay = 30, float height = 45){
-  float min = -80;
-  float max =  80;
+// WARNING, (y_range < x) !!! and might break with (height < 80) due to servo limits, TODO implement check and warning!
+void test_LOOP_Y_INCREASE(MLeg* leg, float x = 70, float y_range = 30, long speed_delay = 30, float height = 45){
+  float min = -y_range;
+  float max =  y_range;
   for(float y = min; y <= max; y+=2){
     leg->set_catesian(x, y, height);
     usleep(speed_delay * 1000);

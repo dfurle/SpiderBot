@@ -11,12 +11,19 @@ MLeg* leg;
 
 
 void loop(){
-  // test_LOOP_R_INCREASE_SMOOTH(leg, 20, 80);
-  // test_DRIVE_TO_INPUT(leg);
-  // test_INIT_TO_LIMITS();
   // test_DRIVE_TO_INPUT(leg);
   // test_DRIVE_TO_XYZ(leg);
-  test_LOOP_Y_INCREASE(leg);
+  
+  
+  // test_LOOP_R_INCREASE(leg, 10, 45);
+  test_LOOP_Y_INCREASE(leg, 60, 60, 10, 80-38);
+
+
+
+
+  // test_INIT_MIN_CONST(leg);
+  // test_INIT_MAX_CONST(leg);
+  // test_INIT_MID_CONST(leg);
 }
 
 int main(){
