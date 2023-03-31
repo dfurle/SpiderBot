@@ -31,22 +31,27 @@ void test_INIT_MIN_CONST(MLeg* l){
 
 // Drives specific servo to inputted angle by user
 // TODO: make work with rpi
-void test_DRIVE_TO_INPUT(MLeg* leg){
+void test_DRIVE_TO_INPUT(Body* body){
+  int leg;
   int motor;
   int pos;
+  printf("Enter Motor ID and Degree: ");
+  std::cin >> leg;
   std::cin >> motor;
   std::cin >> pos;
+  printf("Moving to %d %d\n",motor,pos);
 
   if(motor == -1){
-    leg->i.set(0);
-    leg->m.set(0);
-    leg->o.set(0);
-  } else if(motor == 0)
-    leg->i.set(pos);
-  else if(motor == 1)
-    leg->m.set(pos);
-  else if(motor == 2)
-    leg->o.set(pos);
+    body->getLeg(SIDE::LEFT, LEG::FRONT)->i.set(0);
+    //leg->m.set(0);
+    //leg->o.set(0);
+  } else if(motor == 0){
+    //leg->i.set(pos);
+  }else if(motor == 1){
+    //leg->m.set(pos);
+  }else if(motor == 2){
+    //leg->o.set(pos);
+  }
 }
 
 
@@ -54,9 +59,11 @@ void test_DRIVE_TO_INPUT(MLeg* leg){
 // TODO: Make work with RPI
 void test_DRIVE_TO_XYZ(MLeg* leg){
   int x, y, z;
+  printf("Enter XYZ: ");
   std::cin >> x;
   std::cin >> y;
   std::cin >> z;
+  printf("Moving to %d %d %d\n",x,y,z);
 
   leg->set_catesian(x,y,z);
 }

@@ -8,13 +8,21 @@ MServo::MServo(SIDE side, LEG leg, PART part){
   this->part = part;
   this->id = (int) int(side)*(4*4) + int(leg)*4 + int(part);
   this->currentAngle = 0; // TODO figure out best defaulting angle
-  set(currentAngle);
+  // set(currentAngle);
+}
+
+void MServo::setLimits(int low, int high){
+  limits[0] = low;
+  limits[1] = high;
 }
 
 float MServo::convert_angle(float angle){
-  float hLim0 = g.hard_limits[int(part)][0];
-  float hLim1 = g.hard_limits[int(part)][1];
+  float hLim0 = limits[0];
+  float hLim1 = limits[1];
   float diff = hLim1 - hLim0;
+  if(part == PART::OUTER){
+    angle += 15;
+  }
   switch(part){
   case PART::INNER:
     debug(3, "  Original : ", angle);
@@ -44,6 +52,17 @@ float MServo::convert_angle(float angle){
   }
 }
 
+void MServo::directDrive(float angle){
+  this->currentAngle = angle;
+  float val = g.map(angle, 0.f, 180.f, LMIN, LMAX);
+  if(id < 16){
+    g.left.set_pwm_ms(id,val);
+  } else {
+    g.right.set_pwm_ms(id%16,val);
+  }
+}
+
+
 void MServo::set(float angle){
   angle = convert_angle(angle);
   this->currentAngle = angle;
@@ -53,5 +72,9 @@ void MServo::set(float angle){
   // g.pwm.set_pwm(id,0,val);
   printf("angle : %f\n",angle);
   printf("pwm_ms: %f\n",val);
-  g.pwm.set_pwm_ms(id,val);
+  if(id < 16){
+    g.left.set_pwm_ms(id,val);
+  } else {
+    g.right.set_pwm_ms(id%16,val);
+  }
 }

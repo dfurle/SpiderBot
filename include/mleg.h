@@ -4,9 +4,12 @@
 #include "mservo.h"
 #include "debuggable.h"
 
-#define INN_L 35.
-#define MID_L 60.
-#define OUT_L 80.
+// #define INN_L 35.
+// #define MID_L 60.
+// #define OUT_L 80.
+#define INN_L 45.
+#define MID_L 104.
+#define OUT_L 208.
 #define MID_L2 MID_L*MID_L
 #define OUT_L2 OUT_L*OUT_L
 
@@ -21,7 +24,7 @@ public:
   m(side, leg, PART::MIDDLE),
   o(side, leg, PART::OUTER)
   {
-    
+
   };
 
   // https://www.desmos.com/calculator/pxnzvg15nf

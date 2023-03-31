@@ -35,7 +35,8 @@ public:
     {0,0} // ignore
   };
 
-  PiPCA9685::PCA9685 pwm{};
+  PiPCA9685::PCA9685 left{"/dev/i2c-1",0x40};
+  PiPCA9685::PCA9685 right{"/dev/i2c-1",0x41};
 
   template<class T>
   const T& constrain(const T& x, const T& a, const T& b) {

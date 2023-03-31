@@ -13,7 +13,8 @@ void MLeg::set_debug(int new_debug_level){
 
 
 // (old) https://www.desmos.com/calculator/pxnzvg15nf
-// https://www.desmos.com/calculator/zwpvstzazw
+// (old) https://www.desmos.com/calculator/zwpvstzazw
+// https://www.desmos.com/calculator/yvtlskfmwz
 // idk if link will be dead after a while or not...
 // void calcAngles(float theta, float r, float height, float& innerA, float& middleA, float& outerA){
 void MLeg::calcAngles(float theta, float r, float height){
