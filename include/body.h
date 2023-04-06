@@ -128,10 +128,12 @@ public:
     for(int s = 0; s < 2; s++){ // 2 sides
       for(int l = 0; l < 3; l++){ // 3 legs per side
         for(int p = 0; p < 3; p++){ // 3 servos per leg
+          int mbits = (side & bit_s) | (leg & bit_l) | (part & bit_p);
           if(!(side & bit_s) || !(leg & bit_l) || !(part & bit_p)){
             continue;
           }
-          int mbits = (side & bit_s) | (leg & bit_l) | (part & bit_p);
+          printf("running servo");
+          g.print_bin("bin",mbits);
           // printf("mbits:");
           // print_bin(mbits);
           f(getServo(mbits));
@@ -145,11 +147,11 @@ public:
   }
 
   void setLimits(int min, int max, int bits){
-    runForServos([&](Servo s){s.setLimits(min, max);}, bits);
+    runForServos([&](Servo& s){s.setLimits(min, max);}, bits);
   }
 
   // can input multiple bits for servo
   void setServos(int angle, int bits){
-    runForServos([&](Servo s){s.set(angle);}, bits);
+    runForServos([&](Servo& s){s.set(angle);}, bits);
   }
 };
