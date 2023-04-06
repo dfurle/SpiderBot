@@ -72,6 +72,17 @@ public:
 
   void print_bin(std::string title, short val);
 
+  int findSetBit(std::uint32_t bits){
+    if (!(bits && !(bits & (bits-1))))
+      return 0;
+    return log2(bits) + 1;
+  }
+
+  int strip(int bits, int all){
+    int v = bits & all;
+    return v;
+  }
+
 
   template<class T>
   const T& constrain(const T& x, const T& a, const T& b) {

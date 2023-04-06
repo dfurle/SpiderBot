@@ -27,11 +27,11 @@ int legToBit(std::string leg){
 }
 
 int partToBit(std::string part){
-  if(part == "inner")
+  if(part == "i")
     return PART::INNER;
-  else if(part == "middle")
+  else if(part == "m")
     return PART::MIDDLE;
-  else if(part == "outer")
+  else if(part == "o")
     return PART::OUTER;
   else
     printf("wrong part input\n");
@@ -56,10 +56,12 @@ void test_DRIVE_TO_INPUT(Body* body){
   printf("Moving to SIDE::%s LEG::%s PART::%s angle=%d\n",side.c_str(),leg.c_str(),part.c_str(),angle);
 
   int bside = sideToBit(side);
-  int bleg  = sideToBit(leg);
-  int bpart = sideToBit(part);
+  int bleg  = legToBit(leg);
+  int bpart = partToBit(part);
 
   g.print_bin("bin",bside | bleg | bpart);
+
+  printf("\n\n\n\n\n\n");
 
   if(bside && bleg && bpart)
     body->setServos(angle, bside | bleg | bpart);

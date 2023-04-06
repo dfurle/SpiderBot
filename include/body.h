@@ -25,24 +25,14 @@ public:
     legs[5] = new Leg(SIDE::RIGHT | LEG::BACK);
   }
 
-  int findSetBit(std::uint32_t bits){
-    if (!(bits && !(bits & (bits-1))))
-      return 0;
-    return log2(bits) + 1;
-  }
-
-  int strip(int bits, int all){
-    int v = bits & all;
-    return v;
-  }
 
   Leg* getLeg(int bits){
     int side = bits & SIDE::ALL;
     int leg  = bits & LEG::ALL;
     side >>= SIDE::MIN;
     leg  >>= LEG::MIN;
-    side = findSetBit(side);
-    leg =  findSetBit(leg);
+    side = g.findSetBit(side);
+    leg =  g.findSetBit(leg);
     if(!side){
       printf("side input incorrect\n");
       return nullptr;
@@ -86,7 +76,7 @@ public:
   }
 
   // only input single bit, get single servo
-  Servo& getServo(int bits){
+  Servo* getServo(int bits){
     // maybe use strip since more modular?
     // int part = strip(bits, PART::ALL);
     // int leg_bits = strip(bits, (SIDE::ALL | LEG::ALL));
@@ -94,20 +84,20 @@ public:
     int part = bits & PART::ALL;
     int leg_bits = bits & (SIDE::ALL | LEG::ALL);
     if(part == PART::INNER)
-      return getLeg(leg_bits)->i;
+      return &getLeg(leg_bits)->i;
     if(part == PART::MIDDLE)
-      return getLeg(leg_bits)->m;
+      return &getLeg(leg_bits)->m;
     if(part == PART::OUTER)
-      return getLeg(leg_bits)->o;
+      return &getLeg(leg_bits)->o;
     printf("Should not be here, PART input incorrect\n");
     // return 0;
   }
 
   template<typename Func>
   void runForServos(Func f, int bits){
-    int side = strip(bits, SIDE::ALL);
-    int leg  = strip(bits, LEG::ALL);
-    int part = strip(bits, PART::ALL);
+    int side = g.strip(bits, SIDE::ALL);
+    int leg  = g.strip(bits, LEG::ALL);
+    int part = g.strip(bits, PART::ALL);
 
     // printf("inp  :");
     // print_bin(bits);
@@ -123,16 +113,16 @@ public:
     }
 
     int bit_s = 1<<SIDE::MIN;
-    int bit_l = 1<<LEG::MIN;
-    int bit_p = 1<<PART::MIN;
     for(int s = 0; s < 2; s++){ // 2 sides
+      int bit_l = 1<<LEG::MIN;
       for(int l = 0; l < 3; l++){ // 3 legs per side
+        int bit_p = 1<<PART::MIN;
         for(int p = 0; p < 3; p++){ // 3 servos per leg
           int mbits = (side & bit_s) | (leg & bit_l) | (part & bit_p);
           if(!(side & bit_s) || !(leg & bit_l) || !(part & bit_p)){
+            bit_p <<= 1;
             continue;
           }
-          printf("running servo");
           g.print_bin("bin",mbits);
           // printf("mbits:");
           // print_bin(mbits);
@@ -147,11 +137,11 @@ public:
   }
 
   void setLimits(int min, int max, int bits){
-    runForServos([&](Servo& s){s.setLimits(min, max);}, bits);
+    runForServos([&](Servo* s){s->setLimits(min, max);}, bits);
   }
 
   // can input multiple bits for servo
   void setServos(int angle, int bits){
-    runForServos([&](Servo& s){s.set(angle);}, bits);
+    runForServos([&](Servo* s){s->set(angle);}, bits);
   }
 };

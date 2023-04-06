@@ -50,7 +50,7 @@ int main(){
   body.setLimits(72, 162, SIDE::ALL | LEG::ALL | PART::MIDDLE);
   body.setLimits(30, 180, SIDE::ALL | LEG::ALL | PART::OUTER);
 
-  body.setServos(0, SIDE::LEFT | LEG::MIDDLE | PART::ALL);
+  // body.setServos(0, SIDE::LEFT | LEG::MIDDLE | PART::ALL);
 
 
 

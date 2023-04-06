@@ -7,7 +7,10 @@ extern Global g;
 Servo::Servo(int bits){
   this->bits = bits;
   this->part = bits & PART::ALL;
-  this->id = (int) (bits & SIDE::ALL)*(4*4) + int(bits & LEG::ALL)*4 + int(part);
+  int _side = g.findSetBit((bits & SIDE::ALL)>>SIDE::MIN) - 1;
+  int _leg = g.findSetBit(((bits & LEG::ALL)>>LEG::MIN)) - 1;
+  int _part = g.findSetBit((part>>PART::MIN)) - 1;
+  this->id = (int) ((_side)*(4*4) + (_leg)*4 + _part);
   this->currentAngle = 0; // TODO: figure out best defaulting angle
   // set(currentAngle);
 }
@@ -15,6 +18,7 @@ Servo::Servo(int bits){
 void Servo::setLimits(int low, int high){
   limits[0] = low;
   limits[1] = high;
+  printf("set lims, %d %d\n",low, high);
 }
 
 float Servo::convert_angle(float angle){
@@ -65,6 +69,7 @@ void Servo::directDrive(float angle){
 
 
 void Servo::set(float angle){
+  printf("setting angle %d\n",angle);
   angle = convert_angle(angle);
   this->currentAngle = angle;
   // int val = g.map(angle,0.f,180.f,LMIN,LMAX);
