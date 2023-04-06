@@ -2,9 +2,10 @@
 #include "global.h"
 #include "debuggable.h"
 
-class MServo: public Debuggable{
+class Servo: public Debuggable{
 public:
-  PART part;
+  int part;
+  int bits;
   int id;
   float currentAngle;
 
@@ -13,7 +14,7 @@ public:
   // float targetAngle;
   // float speed;
 
-  MServo(SIDE side, LEG leg, PART part);
+  Servo(int side_leg_servo_bits);
   void setLimits(int low, int high);
   float convert_angle(float angle);
   void directDrive(float angle);

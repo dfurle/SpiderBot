@@ -1,63 +1,74 @@
 #pragma once
-#include "mservo.h"
-#include "mleg.h"
+#include "servo.h"
+#include "leg.h"
+#include "global.h"
 #include <iostream>
 
-extern Global g;
+// extern Global g;
 
-void test_INIT_MID_CONST(MLeg* l){
-  printf("INIT TO MID constrained\n");
-  l->i.set(0);
-  l->m.set(90);
-  l->o.set(90);
+int sideToBit(std::string side){
+  if(side == "l")
+    return SIDE::LEFT;
+  else if(side == "r")
+    return SIDE::RIGHT;
+  else
+    printf("wrong side input\n");
 }
 
-
-void test_INIT_MAX_CONST(MLeg* l){
-  printf("INIT TO MAX constrained\n");
-  l->i.set(90);
-  l->m.set(180);
-  l->o.set(180);
+int legToBit(std::string leg){
+  if(leg == "f")
+    return LEG::FRONT;
+  else if(leg == "m")
+    return LEG::MIDDLE;
+  else if(leg == "b")
+    return LEG::BACK;
+  else
+    printf("wrong leg  input\n");
 }
 
-
-void test_INIT_MIN_CONST(MLeg* l){
-  printf("INIT TO MIN constrained\n");
-  l->i.set(-90);
-  l->m.set(0);
-  l->o.set(0);
+int partToBit(std::string part){
+  if(part == "inner")
+    return PART::INNER;
+  else if(part == "middle")
+    return PART::MIDDLE;
+  else if(part == "outer")
+    return PART::OUTER;
+  else
+    printf("wrong part input\n");
 }
 
+void print_menu(){
+  printf("");
+}
 
 // Drives specific servo to inputted angle by user
 // TODO: make work with rpi
 void test_DRIVE_TO_INPUT(Body* body){
-  int leg;
-  int motor;
-  int pos;
-  printf("Enter Motor ID and Degree: ");
+  std::string side;
+  std::string leg;
+  std::string part;
+  int angle;
+  printf("Enter (SIDE LEG PART angle): ");
+  std::cin >> side;
   std::cin >> leg;
-  std::cin >> motor;
-  std::cin >> pos;
-  printf("Moving to %d %d\n",motor,pos);
+  std::cin >> part;
+  std::cin >> angle;
+  printf("Moving to SIDE::%s LEG::%s PART::%s angle=%d\n",side.c_str(),leg.c_str(),part.c_str(),angle);
 
-  if(motor == -1){
-    body->getLeg(SIDE::LEFT, LEG::FRONT)->i.set(0);
-    //leg->m.set(0);
-    //leg->o.set(0);
-  } else if(motor == 0){
-    //leg->i.set(pos);
-  }else if(motor == 1){
-    //leg->m.set(pos);
-  }else if(motor == 2){
-    //leg->o.set(pos);
-  }
+  int bside = sideToBit(side);
+  int bleg  = sideToBit(leg);
+  int bpart = sideToBit(part);
+
+  g.print_bin("bin",bside | bleg | bpart);
+
+  if(bside && bleg && bpart)
+    body->setServos(angle, bside | bleg | bpart);
 }
 
 
 // Drives specific servo to cartesian coords by user
 // TODO: Make work with RPI
-void test_DRIVE_TO_XYZ(MLeg* leg){
+void test_DRIVE_TO_XYZ(Leg* leg){
   int x, y, z;
   printf("Enter XYZ: ");
   std::cin >> x;
@@ -68,7 +79,7 @@ void test_DRIVE_TO_XYZ(MLeg* leg){
   leg->set_catesian(x,y,z);
 }
 
-void test_LOOP_R_INCREASE(MLeg* leg, long speed_delay = 30, float height = 45){
+void test_LOOP_R_INCREASE(Leg* leg, long speed_delay = 30, float height = 45){
   int min = 1;
   int max = sqrt((MID_L+OUT_L)*(MID_L+OUT_L)-(height*height)) - 1;
   printf("max: %d\n",max);
@@ -85,7 +96,7 @@ void test_LOOP_R_INCREASE(MLeg* leg, long speed_delay = 30, float height = 45){
 }
 
 // WARNING, (y_range < x) !!! and might break with (height < 80) due to servo limits, TODO implement check and warning!
-void test_LOOP_Y_INCREASE(MLeg* leg, float x = 70, float y_range = 30, long speed_delay = 30, float height = 45){
+void test_LOOP_Y_INCREASE(Leg* leg, float x = 70, float y_range = 30, long speed_delay = 30, float height = 45){
   float min = -y_range;
   float max =  y_range;
   for(float y = min; y <= max; y+=2){
@@ -100,7 +111,7 @@ void test_LOOP_Y_INCREASE(MLeg* leg, float x = 70, float y_range = 30, long spee
   usleep(100000);
 }
 
-void test_LOOP_90_DEG(MLeg* leg){
+void test_LOOP_90_DEG(Leg* leg){
   leg->i.set(0);
   leg->m.set(0);
   leg->o.set(0);
@@ -120,9 +131,4 @@ void test_LOOP_90_DEG(MLeg* leg){
   leg->m.set(0);
   leg->o.set(90);
   usleep(10 * 1000 * 1000);
-}
-
-// TODO: make all legs run the same test_###() code
-void test_DO_ALL(){
-
 }

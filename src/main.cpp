@@ -1,4 +1,4 @@
-// #include "mleg.h"
+// #include "leg.h"
 #include "body.h"
 #include "test_runs.h"
 
@@ -7,25 +7,17 @@ Global g;
 
 
 // TODO: why can i initialize it here?
-// MLeg leg(SIDE::LEFT, LEG::OTHER);
-// MLeg* leg;
+// Leg leg(SIDE::LEFT, LEG::OTHER);
+// Leg* leg;
 Body body;
 
 
 void loop(){
-  // test_DRIVE_TO_INPUT(leg);
+  test_DRIVE_TO_INPUT(&body);
   // test_DRIVE_TO_XYZ(body.getLeg(SIDE::LEFT, LEG::FRONT));
 
-
   
-  int motor;
-  int pos;
-  printf("Enter Motor ID and Degree: ");
-  std::cin >> motor;
-  std::cin >> pos;
-  printf("Moving to %d %d\n",motor,pos);
-
-  body.setAll((PART) motor, pos);
+  // body.setAll((PART) motor, pos);
 
   
   
@@ -47,20 +39,25 @@ int main(){
 
   body.initialize();
 
+  // body.getLeg(SIDE::LEFT | LEG::MIDDLE | PART::ALL);
+  // for(int i = 0; i < 1<<5; i++){
+  //   // body.getLeg(i);
+  //   // body.setServos(0, SIDE::LEFT | LEG::MIDDLE | PART::ALL);
+  // }
 
-  body.setAllLimits(45, 135, PART::INNER);
-  body.setAllLimits(72, 162, PART::MIDDLE);
-  body.setAllLimits(30, 180, PART::OUTER);
 
+  body.setLimits(45, 135, SIDE::ALL | LEG::ALL | PART::INNER);
+  body.setLimits(72, 162, SIDE::ALL | LEG::ALL | PART::MIDDLE);
+  body.setLimits(30, 180, SIDE::ALL | LEG::ALL | PART::OUTER);
 
-  //body.setLimits()
+  body.setServos(0, SIDE::LEFT | LEG::MIDDLE | PART::ALL);
 
 
 
   // body.setLimits(45, 135, SIDE::LEFT, LEG::FRONT, PART::INNER);
   // body.setLimits(72, 162, SIDE::LEFT, LEG::FRONT, PART::MIDDLE);
   // body.setLimits(30, 180, SIDE::LEFT, LEG::FRONT, PART::OUTER);
-  // leg = new MLeg(SIDE::LEFT, LEG::FRONT);
+  // leg = new Leg(SIDE::LEFT, LEG::FRONT);
   // leg->set_debug(1);
 
   // leg->i.setLimits(0, 90);

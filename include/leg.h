@@ -1,28 +1,19 @@
 #pragma once
 
 #include "global.h"
-#include "mservo.h"
+#include "servo.h"
 #include "debuggable.h"
 
-// #define INN_L 35.
-// #define MID_L 60.
-// #define OUT_L 80.
-#define INN_L 45.
-#define MID_L 104.
-#define OUT_L 208.
-#define MID_L2 MID_L*MID_L
-#define OUT_L2 OUT_L*OUT_L
-
-class MLeg: public Debuggable{
+class Leg: public Debuggable{
 public:
-  MServo i, m, o;
+  Servo i, m, o;
 
   void set_debug(int new_debug_level);
 
-  MLeg(SIDE side, LEG leg):
-  i(side, leg, PART::INNER),
-  m(side, leg, PART::MIDDLE),
-  o(side, leg, PART::OUTER)
+  Leg(int side_leg_bits):
+  i(side_leg_bits | PART::INNER),
+  m(side_leg_bits | PART::MIDDLE),
+  o(side_leg_bits | PART::OUTER)
   {
 
   };
@@ -34,5 +25,7 @@ public:
   void set_catesian(float x, float y, float height);
   void test_set_r(float r, float height);
   void set_angles(float innerA, float middleA, float outerA);
+
+  void setByIndex(int index, int angle);
 };
 

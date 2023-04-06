@@ -14,14 +14,45 @@
 // int LMID = 1500./20000 * 4096;
 // int LMAX = 2500./20000 * 4096;
 
+
+// #define INN_L 35.
+// #define MID_L 60.
+// #define OUT_L 80.
+#define INN_L 45.
+#define MID_L 104.
+#define OUT_L 208.
+#define MID_L2 MID_L*MID_L
+#define OUT_L2 OUT_L*OUT_L
+
 #define RAD_TO_DEG 57.295779
 #define DEG_TO_RAD 0.017453
 // #define M_PI 3.141592
 
 
-enum class SIDE{ LEFT, RIGHT };
-enum class LEG { FRONT, MIDDLE, BACK, OTHER };
-enum class PART{ INNER, MIDDLE, OUTER, OTHER };
+class SIDE{ 
+public:
+  static const unsigned int LEFT = 1;
+  static const unsigned int RIGHT = 1<<1;
+  static const unsigned int ALL = LEFT | RIGHT;
+  static const unsigned int MIN=0;
+};
+class LEG {
+public:
+  static const unsigned int FRONT = 1<<2;
+  static const unsigned int MIDDLE=1<<3;
+  static const unsigned int BACK=1<<4;
+  static const unsigned int ALL = FRONT | MIDDLE | BACK;
+  static const unsigned int MIN=2;
+};
+class PART{
+public:
+  static const unsigned int INNER = 1<<5;
+  static const unsigned int MIDDLE=1<<6;
+  static const unsigned int OUTER=1<<7;
+  static const unsigned int ALL = INNER | MIDDLE | OUTER;
+  static const unsigned int MIN=5;
+};
+
 
 
 class Global{
@@ -37,6 +68,10 @@ public:
 
   PiPCA9685::PCA9685 left{"/dev/i2c-1",0x40};
   PiPCA9685::PCA9685 right{"/dev/i2c-1",0x41};
+
+
+  void print_bin(std::string title, short val);
+
 
   template<class T>
   const T& constrain(const T& x, const T& a, const T& b) {
@@ -56,4 +91,4 @@ public:
   }
 };
 
-// Global g;
+extern Global g;

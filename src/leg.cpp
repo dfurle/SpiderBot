@@ -1,10 +1,10 @@
-#include "mleg.h"
+#include "leg.h"
 // #include "globals.h"
 // #include "debuggable.h"
-#include "mservo.h"
+#include "servo.h"
 
 
-void MLeg::set_debug(int new_debug_level){
+void Leg::set_debug(int new_debug_level){
   debug_level = new_debug_level;
   i.set_debug(debug_level);
   m.set_debug(debug_level);
@@ -17,7 +17,7 @@ void MLeg::set_debug(int new_debug_level){
 // https://www.desmos.com/calculator/yvtlskfmwz
 // idk if link will be dead after a while or not...
 // void calcAngles(float theta, float r, float height, float& innerA, float& middleA, float& outerA){
-void MLeg::calcAngles(float theta, float r, float height){
+void Leg::calcAngles(float theta, float r, float height){
   r = r - INN_L;
   float r2 = r*r;
   // this is the height from middle servo to base (in this case lowest point of my leg)
@@ -46,7 +46,7 @@ void MLeg::calcAngles(float theta, float r, float height){
   set_angles(innerA, middleA, outerA);
 }
 
-void MLeg::set_catesian(float x, float y, float height){
+void Leg::set_catesian(float x, float y, float height){
   float r = sqrt(x*x + y*y);
   float theta = atan2(y,x) * RAD_TO_DEG;
 
@@ -61,7 +61,7 @@ void MLeg::set_catesian(float x, float y, float height){
   calcAngles(theta, r, height);
 }
 
-void MLeg::test_set_r(float r, float height){
+void Leg::test_set_r(float r, float height){
 
   if(debug(3)){
     printf("Angles: r=%f\n",r);
@@ -75,7 +75,7 @@ void MLeg::test_set_r(float r, float height){
   calcAngles(0, r, height);
 }
 
-void MLeg::set_angles(float innerA, float middleA, float outerA){
+void Leg::set_angles(float innerA, float middleA, float outerA){
   if(debug(2))
     printf(" Inner\n");
   i.set(innerA);

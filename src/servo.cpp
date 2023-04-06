@@ -1,22 +1,23 @@
-#include "mservo.h"
+#include "servo.h"
 #include "global.h"
 #include "debuggable.h"
 
 extern Global g;
 
-MServo::MServo(SIDE side, LEG leg, PART part){
-  this->part = part;
-  this->id = (int) int(side)*(4*4) + int(leg)*4 + int(part);
-  this->currentAngle = 0; // TODO figure out best defaulting angle
+Servo::Servo(int bits){
+  this->bits = bits;
+  this->part = bits & PART::ALL;
+  this->id = (int) (bits & SIDE::ALL)*(4*4) + int(bits & LEG::ALL)*4 + int(part);
+  this->currentAngle = 0; // TODO: figure out best defaulting angle
   // set(currentAngle);
 }
 
-void MServo::setLimits(int low, int high){
+void Servo::setLimits(int low, int high){
   limits[0] = low;
   limits[1] = high;
 }
 
-float MServo::convert_angle(float angle){
+float Servo::convert_angle(float angle){
   float hLim0 = limits[0];
   float hLim1 = limits[1];
   float diff = hLim1 - hLim0;
@@ -52,7 +53,7 @@ float MServo::convert_angle(float angle){
   }
 }
 
-void MServo::directDrive(float angle){
+void Servo::directDrive(float angle){
   this->currentAngle = angle;
   float val = g.map(angle, 0.f, 180.f, LMIN, LMAX);
   if(id < 16){
@@ -63,7 +64,7 @@ void MServo::directDrive(float angle){
 }
 
 
-void MServo::set(float angle){
+void Servo::set(float angle){
   angle = convert_angle(angle);
   this->currentAngle = angle;
   // int val = g.map(angle,0.f,180.f,LMIN,LMAX);
