@@ -69,7 +69,7 @@ void Servo::directDrive(float angle){
 
 
 void Servo::set(float angle){
-  printf("setting angle %d\n",angle);
+  printf("setting angle %f\n",angle);
   angle = convert_angle(angle);
   this->currentAngle = angle;
   // int val = g.map(angle,0.f,180.f,LMIN,LMAX);

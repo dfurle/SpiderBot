@@ -41,6 +41,8 @@ public:
       printf("leg  input incorrect\n");
       return nullptr;
     }
+    side--;
+    leg--;
     return legs[3*side+leg%3];
 
 
@@ -76,7 +78,7 @@ public:
   }
 
   // only input single bit, get single servo
-  Servo* getServo(int bits){
+  Servo& getServo(int bits){
     // maybe use strip since more modular?
     // int part = strip(bits, PART::ALL);
     // int leg_bits = strip(bits, (SIDE::ALL | LEG::ALL));
@@ -84,11 +86,11 @@ public:
     int part = bits & PART::ALL;
     int leg_bits = bits & (SIDE::ALL | LEG::ALL);
     if(part == PART::INNER)
-      return &getLeg(leg_bits)->i;
+      return getLeg(leg_bits)->i;
     if(part == PART::MIDDLE)
-      return &getLeg(leg_bits)->m;
+      return getLeg(leg_bits)->m;
     if(part == PART::OUTER)
-      return &getLeg(leg_bits)->o;
+      return getLeg(leg_bits)->o;
     printf("Should not be here, PART input incorrect\n");
     // return 0;
   }
@@ -119,15 +121,9 @@ public:
         int bit_p = 1<<PART::MIN;
         for(int p = 0; p < 3; p++){ // 3 servos per leg
           int mbits = (side & bit_s) | (leg & bit_l) | (part & bit_p);
-          if(!(side & bit_s) || !(leg & bit_l) || !(part & bit_p)){
-            bit_p <<= 1;
-            continue;
+          if((side & bit_s) && (leg & bit_l) && (part & bit_p)){
+            f(getServo(mbits));
           }
-          g.print_bin("bin",mbits);
-          // printf("mbits:");
-          // print_bin(mbits);
-          f(getServo(mbits));
-          // getServo(mbits).set(angle);
           bit_p <<= 1;
         }
         bit_l <<= 1;
@@ -137,11 +133,11 @@ public:
   }
 
   void setLimits(int min, int max, int bits){
-    runForServos([&](Servo* s){s->setLimits(min, max);}, bits);
+    runForServos([&](Servo& s){s.setLimits(min, max);}, bits);
   }
 
   // can input multiple bits for servo
   void setServos(int angle, int bits){
-    runForServos([&](Servo* s){s->set(angle);}, bits);
+    runForServos([&](Servo& s){s.set(angle);}, bits);
   }
 };
