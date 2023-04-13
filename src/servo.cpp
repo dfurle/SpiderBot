@@ -12,13 +12,14 @@ Servo::Servo(int bits){
   int _part = g.findSetBit((part>>PART::MIN)) - 1;
   this->id = (int) ((_side)*(4*4) + (_leg)*4 + _part);
   this->currentAngle = 0; // TODO: figure out best defaulting angle
+  this->a = currentAngle;
+  this->ad = currentAngle;
   // set(currentAngle);
 }
 
 void Servo::setLimits(int low, int high){
   limits[0] = low;
   limits[1] = high;
-  printf("set lims, %d %d\n",low, high);
 }
 
 float Servo::convert_angle(float angle){
@@ -58,7 +59,9 @@ float Servo::convert_angle(float angle){
 }
 
 void Servo::directDrive(float angle){
+  this->ad = angle;
   this->currentAngle = angle;
+  this->a = angle;
   float val = g.map(angle, 0.f, 180.f, LMIN, LMAX);
   if(id < 16){
     g.left.set_pwm_ms(id,val);
@@ -69,9 +72,11 @@ void Servo::directDrive(float angle){
 
 
 void Servo::set(float angle){
+  this->ad = angle;
   printf("setting angle %f\n",angle);
   angle = convert_angle(angle);
   this->currentAngle = angle;
+  this->a = angle;
   // int val = g.map(angle,0.f,180.f,LMIN,LMAX);
   float val = g.map(angle,0.f,180.f,LMIN,LMAX);
   debug(4, " PWM      :", val);

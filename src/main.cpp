@@ -9,11 +9,10 @@ Global g;
 // TODO: why can i initialize it here?
 // Leg leg(SIDE::LEFT, LEG::OTHER);
 // Leg* leg;
-Body body;
 
 
-void loop(){
-  test_DRIVE_TO_INPUT(&body);
+void loop(Body& body){
+  test_DRIVE_TO_INPUT(body);
   // test_DRIVE_TO_XYZ(body.getLeg(SIDE::LEFT, LEG::FRONT));
 
   
@@ -33,6 +32,7 @@ void loop(){
 }
 
 int main(){
+  Body body;
 
   g.left.set_pwm_freq(50);
   g.right.set_pwm_freq(50);
@@ -66,7 +66,7 @@ int main(){
 
 
   while(true){
-    loop();
+    loop(body);
   }
 
   return 0;

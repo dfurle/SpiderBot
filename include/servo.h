@@ -8,6 +8,7 @@ public:
   int bits;
   int id;
   float currentAngle;
+  int a, ad;
 
   int limits[2];
 

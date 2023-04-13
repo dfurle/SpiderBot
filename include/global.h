@@ -28,6 +28,14 @@
 #define DEG_TO_RAD 0.017453
 // #define M_PI 3.141592
 
+#define LF 0
+#define LM 1
+#define LB 2
+
+#define RF 3
+#define RM 4
+#define RB 5
+
 
 class SIDE{ 
 public:
