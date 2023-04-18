@@ -84,7 +84,7 @@ bool adjustedAngle = true;
 void print_menu(Body& body){
   printf("Currently Editing:\n");
   int b = bits_selected;
-  printf("Sides: (%5s) | (%5s)  |\n",((b & SIDE::LEFT)?"LEFT ":""),((b & SIDE::RIGHT)?"RIGHT":""));
+  printf("Sides: (%5s) | (%5s) |\n",((b & SIDE::LEFT)?"LEFT ":""),((b & SIDE::RIGHT)?"RIGHT":""));
   printf("Legs : (%5s) | (%5s) | (%5s)\n",(b & LEG::FRONT)?"FRONT":"",(b & LEG::MIDDLE)?"MIDDLE":"",(b & LEG::BACK)?"BACK ":"");
   printf("Parts: (%5s) | (%5s) | (%5s)\n",(b & PART::INNER)?"INNER":"",(b & PART::MIDDLE)?"MIDDLE":"",(b & PART::OUTER)?"OUTER":"");
   g.print_bin("bin",bits_selected);
@@ -125,9 +125,10 @@ void print_menu(Body& body){
 // returns if angle is returned
 bool get_input(int& angle){
   printf("       E - edit which servos are accessed\n");
+  printf("       A - set just servo of choice\n");
   printf("       S - Switch angle type viewing\n");
   printf("       # - or enter any number to set angle\n");
-  printf("Enter ('e', 's' or angle): ");
+  printf("Enter ('e', 's', 'a' or angle): ");
   std::string in;
   std::cin >> in;
   if(in[0] == 'e' || in[0] == 'E'){
@@ -149,6 +150,19 @@ bool get_input(int& angle){
     }
   } else if(in[0] == 's' || in[0] == 'S'){
     adjustedAngle = !adjustedAngle;
+  } else if(in[0] == 'a' || in[0] == 'A'){
+    printf("Enter Servos and angle: (part:(omia) #angle)   (ex: 'r fm o')\n");
+    std::string part;
+    int angle = 0;
+    std::cin >> part;
+    std::cin >> angle;
+    int bpart = partToBit(part);
+    if(bits_selected && bpart){
+      bits_selected %= 1<<PART::MIN;
+      bits_selected |= bpart;
+    } else {
+      printf("Invalid inputs, please enter only above mentioned\n");
+    }
   } else { // number probably input
     angle = std::stoi(in);
     return true;
