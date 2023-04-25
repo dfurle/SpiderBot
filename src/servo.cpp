@@ -7,10 +7,11 @@ extern Global g;
 Servo::Servo(int bits){
   this->bits = bits;
   this->part = bits & PART::ALL;
-  int _side = g.findSetBit((bits & SIDE::ALL)>>SIDE::MIN) - 1;
   int _leg = g.findSetBit(((bits & LEG::ALL)>>LEG::MIN)) - 1;
   int _part = g.findSetBit((part>>PART::MIN)) - 1;
-  this->id = (int) ((_side)*(4*4) + (_leg)*4 + _part);
+  this->id = (int) ((_leg)*4 + _part);
+  if(_leg >= 3)
+    this->id += 4*4; // if right side, switch to other PWM board;
   this->currentAngle = 0; // TODO: figure out best defaulting angle
   this->a = currentAngle;
   this->ad = currentAngle;
