@@ -9,9 +9,15 @@ Servo::Servo(int bits){
   this->part = bits & PART::ALL;
   int _leg = g.findSetBit(((bits & LEG::ALL)>>LEG::MIN)) - 1;
   int _part = g.findSetBit((part>>PART::MIN)) - 1;
+  printf("leg: %d\n",_leg);
   this->id = (int) ((_leg)*4 + _part);
-  if(_leg >= 3)
-    this->id += 4*4; // if right side, switch to other PWM board;
+  printf("id1: %d\n",this->id);
+  if(_leg >= 3){
+    this->id = (int) (16 + (_leg-3)*4 + _part);
+    // this->id += 4*4; // if right side, switch to other PWM board;
+    printf("id2: %d\n",this->id);
+  }
+  printf("\n");
   this->currentAngle = 0; // TODO: figure out best defaulting angle
   this->a = currentAngle;
   this->ad = currentAngle;

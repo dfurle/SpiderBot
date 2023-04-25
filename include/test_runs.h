@@ -28,10 +28,12 @@ int toBits(std::string str){
   index["OUTER"] = PART::OUTER;
   index["PALL"] = PART::ALL;
 
+  // while ((pos = str.find(' ')) != std::string::npos || (pos = str.find('\n')) != std::string::npos) {
   while ((pos = str.find(' ')) != std::string::npos) {
     token = str.substr(0, pos);
     std::transform(token.begin(), token.end(), token.begin(), ::toupper);
     str.erase(0, pos+1);
+    printf("token (%s)\n",token.c_str());
     auto it = index.find(token);
     if (it != index.end()){
       bits |= it->second;
@@ -70,9 +72,9 @@ bool adjustedAngle = true;
 void print_menu(Body& body){
   printf("Currently Editing:\n");
   int b = bits_selected;
-  printf("Right: (%5s) | (%5s) | (%5s)\n",(b & LEG::FR)?"FRONT":"",(b & LEG::MR)?"MIDDLE":"",(b & LEG::RR)?"BACK ":"");
-  printf("Left : (%5s) | (%5s) | (%5s)\n",(b & LEG::FL)?"FRONT":"",(b & LEG::ML)?"MIDDLE":"",(b & LEG::RL)?"BACK ":"");
-  printf("Parts: (%5s) | (%5s) | (%5s)\n",(b & PART::INNER)?"INNER":"",(b & PART::MIDDLE)?"MIDDLE":"",(b & PART::OUTER)?"OUTER":"");
+  printf("Right: (%6s) | (%6s) | (%6s)\n",(b & LEG::FR)?"FRONT":"",(b & LEG::MR)?"MIDDLE":"",(b & LEG::RR)?"BACK ":"");
+  printf("Left : (%6s) | (%6s) | (%6s)\n",(b & LEG::FL)?"FRONT":"",(b & LEG::ML)?"MIDDLE":"",(b & LEG::RL)?"BACK ":"");
+  printf("Parts: (%6s) | (%6s) | (%6s)\n",(b & PART::INNER)?"INNER":"",(b & PART::MIDDLE)?"MIDDLE":"",(b & PART::OUTER)?"OUTER":"");
   g.print_bin("bin",bits_selected);
   printf("\nStatus in (%s) form\n\n",(adjustedAngle?"Adjusted":"Raw"));
 
@@ -115,7 +117,7 @@ bool get_input(int& angle){
   printf("       # - or enter any number to set angle\n");
   printf("Enter ('e', 's' or angle): ");
   std::string in;
-  std::cin >> in;
+  std::getline(std::cin, in);
   if(in[0] == 'e' || in[0] == 'E'){
     printf("Enter Servos to access: (leg:(fmra) part:(omia))   (ex: 'fm o')\n");
     std::string str;

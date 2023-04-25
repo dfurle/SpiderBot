@@ -48,7 +48,8 @@ int main(){
 
   body.setLimits(45, 135, LEG::ALL | PART::INNER);
   body.setLimits(72, 162, LEG::ALL | PART::MIDDLE);
-  body.setLimits(30, 180, LEG::ALL | PART::OUTER);
+  body.setLimits(0, 180, LEG::ALL | PART::OUTER);
+
 
   // body.setServos(0, SIDE::LEFT | LEG::MIDDLE | PART::ALL);
 
