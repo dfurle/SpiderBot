@@ -32,20 +32,20 @@ Leg* Body::getLeg(int bits){
 }
 
 // only input single bit, get single servo
-Servo& Body::getServo(int bits){
+Servo* Body::getServo(int bits){
   // maybe use strip since more modular?
   // int part = strip(bits, PART::ALL);
   // int leg_bits = strip(bits, (SIDE::ALL | LEG::ALL));
 
   int part = bits & PART::ALL;
   if(part == PART::INNER)
-    return getLeg(bits)->i;
+    return &getLeg(bits)->i;
   if(part == PART::MIDDLE)
-    return getLeg(bits)->m;
+    return &getLeg(bits)->m;
   if(part == PART::OUTER)
-    return getLeg(bits)->o;
+    return &getLeg(bits)->o;
   printf("Should not be here, PART input incorrect\n");
-  // return 0;
+  return nullptr;
 }
 
 
@@ -73,12 +73,33 @@ void Body::runForServos(Func f, int bits){
 }
 
 
+template<typename Func>
+void Body::runForLegs(Func f, int bits){
+  int leg  = g.strip(bits, LEG::ALL);
+
+  if(!leg){
+    printf("Missing inputs\n");
+  }
+
+  int bit_l = 1<<LEG::MIN;
+  for(int l = 0; l < 6; l++){ // 6 legs
+    if(leg & bit_l){
+      f(getLeg(leg & bit_l));
+    }
+    bit_l <<= 1;
+  }
+}
+
 
 void Body::setLimits(int min, int max, int bits){
-  runForServos([&](Servo& s){s.setLimits(min, max);}, bits);
+  runForServos([&](Servo* s){s->setLimits(min, max);}, bits);
 }
 
 // can input multiple bits for servo
 void Body::setServos(int angle, int bits){
-  runForServos([&](Servo& s){s.set(angle);}, bits);
+  runForServos([&](Servo* s){s->set(angle);}, bits);
+}
+
+void Body::setXYZ(int x, int y, int z, int bits){
+  runForLegs([&](Leg* l){l->set_catesian(x,y,z);}, bits);
 }

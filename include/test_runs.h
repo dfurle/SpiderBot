@@ -6,19 +6,6 @@
 #include <iostream>
 
 
-// Drives specific servo to cartesian coords by user
-// TODO: Make work with RPI
-void test_DRIVE_TO_XYZ(Leg* leg){
-  int x, y, z;
-  printf("Enter XYZ: ");
-  std::cin >> x;
-  std::cin >> y;
-  std::cin >> z;
-  printf("Moving to %d %d %d\n",x,y,z);
-
-  leg->set_catesian(x,y,z);
-}
-
 void test_LOOP_R_INCREASE(Leg* leg, long speed_delay = 30, float height = 45){
   int min = 1;
   int max = sqrt((MID_L+OUT_L)*(MID_L+OUT_L)-(height*height)) - 1;

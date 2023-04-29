@@ -1,13 +1,10 @@
 #pragma once
-#include "algorithm.h"
-#include <map>
-#include <algorithm>
-#include <iostream>
-#include <string>
+#include "global.h"
+#include "algorithms/basealgorithm.h"
 
 namespace algo{
 
-class Setup: public algo::BaseAlgorithm{
+class Setup: public BaseAlgorithm{
 public:
   bool adjustedAngle = true;
   std::map<std::string, int> index;
@@ -31,57 +28,14 @@ public:
     index["PALL"] = PART::ALL;
   }
 
-  int toBits(std::string str){
-    size_t pos = 0;
-    std::string token;
-
-    int _bits = 0;
-    int bits_override = 0;
-    int bits_append = 0;
-    int bits_subtr = 0;
-
-    bool done = false;
-    while(!done) {
-      pos = str.find(' ');
-      token = str.substr(0, pos);
-      std::transform(token.begin(), token.end(), token.begin(), ::toupper);
-      str.erase(0, pos+1);
-      char addsub = token[0];
-      if(addsub == '+' || addsub == '-')
-        token = token.substr(1);
-      else
-        addsub = ' ';
-      auto it = index.find(token);
-      if (it != index.end()){
-        g.print_bin("bits",_bits);
-        g.print_bin("iter",it->second);
-        switch(addsub){
-        case ' ':
-          bits_override |= it->second;
-          break;
-        case '+':
-          bits_append |= it->second;
-          break;
-        case '-':
-          // bits_subtr &= ~it->second;
-          bits_subtr |= it->second;
-        }
-      } else {
-        printf("Could not find token (%s)\n",token.c_str());
-      }
-      if(pos == std::string::npos){
-        done = true;
-      }
-    }
-    if(g.strip(bits_override, LEG::ALL) == 0)
-      bits_override |= g.strip(this->bits, LEG::ALL);
-    if(g.strip(bits_override, PART::ALL) == 0)
-      bits_override |= g.strip(this->bits, PART::ALL);
-    _bits |= bits_override;
-    _bits |= bits_append;
-    _bits &= ~bits_subtr;
-    return _bits;
+  void print_selection(int b){
+    printf("Currently Editing:\n");
+    printf("Right: (%5s) | (%6s) | (%5s)\n",(b & LEG::FR)?"FRONT":"",(b & LEG::MR)?"MIDDLE":"",(b & LEG::RR)?"BACK ":"");
+    printf("Left : (%5s) | (%6s) | (%5s)\n",(b & LEG::FL)?"FRONT":"",(b & LEG::ML)?"MIDDLE":"",(b & LEG::RL)?"BACK ":"");
+    printf("Parts: (%5s) | (%6s) | (%5s)\n",(b & PART::INNER)?"INNER":"",(b & PART::MIDDLE)?"MIDDLE":"",(b & PART::OUTER)?"OUTER":"");
+    g.print_bin("bin",b);
   }
+
 
   /*
     .  │  ┤  ┐  └  ┴  ┬  ├  ─  ┼  ┘  ┌
@@ -106,12 +60,7 @@ public:
   */
 
   void print_menu(Body& body){
-    printf("Currently Editing:\n");
-    int b = this->bits;
-    printf("Right: (%5s) | (%6s) | (%5s)\n",(b & LEG::FR)?"FRONT":"",(b & LEG::MR)?"MIDDLE":"",(b & LEG::RR)?"BACK ":"");
-    printf("Left : (%5s) | (%6s) | (%5s)\n",(b & LEG::FL)?"FRONT":"",(b & LEG::ML)?"MIDDLE":"",(b & LEG::RL)?"BACK ":"");
-    printf("Parts: (%5s) | (%6s) | (%5s)\n",(b & PART::INNER)?"INNER":"",(b & PART::MIDDLE)?"MIDDLE":"",(b & PART::OUTER)?"OUTER":"");
-    g.print_bin("bin",this->bits);
+    print_selection(this->bits);
     printf("\nStatus in (%s) form\n\n",(adjustedAngle?"Adjusted":"Raw"));
 
     std::vector<int> aa;
@@ -168,7 +117,7 @@ public:
     } else {
       // std::string str;
       // std::getline(std::cin, str);
-      this->bits = toBits(in); // TODO: add check for properness
+      this->bits = g.toBits(in, this->bits, index); // TODO: add check for properness
     }
     return false;
   }

@@ -47,6 +47,10 @@ void Leg::calcAngles(float theta, float r, float height){
 }
 
 void Leg::set_catesian(float x, float y, float height){
+  this->x = x;
+  this->y = y;
+  this->z = height;
+  
   float r = sqrt(x*x + y*y);
   float theta = atan2(y,x) * RAD_TO_DEG;
 

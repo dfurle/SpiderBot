@@ -1,9 +1,12 @@
 #pragma once
 
 #include <PCA/PCA9685.h>
-#include <string.h>
+// #include <string.h>
 #include <cmath>
 #include <unistd.h>
+#include <map>
+#include <iostream>
+#include <string>
 
 // --- TODO: figure out what is best to use with many servos. ---
 #define LMIN 0.5f  // 80
@@ -90,7 +93,7 @@ public:
 
   void print_bin(std::string title, short val);
 
-  int findSetBit(std::uint32_t bits){
+  int findSetBit(int bits){
     if (!(bits && !(bits & (bits-1))))
       return 0;
     return log2(bits) + 1;
@@ -101,6 +104,7 @@ public:
     return v;
   }
 
+  int toBits(std::string str, int current_bits, std::map<std::string, int>& map);
 
   template<class T>
   const T& constrain(const T& x, const T& a, const T& b) {
