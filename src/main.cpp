@@ -2,6 +2,8 @@
 #include "body.h"
 #include "test_runs.h"
 
+#include "alg_setup.h"
+
 
 Global g;
 
@@ -11,8 +13,11 @@ Global g;
 // Leg* leg;
 
 
-void loop(Body& body){
-  test_DRIVE_TO_INPUT(body);
+void loop(algo::BaseAlgorithm* alg){
+  alg->step();
+
+
+  // test_DRIVE_TO_INPUT(body);
   // test_DRIVE_TO_XYZ(body.getLeg(SIDE::LEFT, LEG::FRONT));
 
   
@@ -33,6 +38,7 @@ void loop(Body& body){
 
 int main(){
   Body body;
+  algo::Setup* alg_setup = new algo::Setup();
 
   g.left.set_pwm_freq(50);
   g.right.set_pwm_freq(50);
@@ -54,6 +60,8 @@ int main(){
   // body.setServos(0, SIDE::LEFT | LEG::MIDDLE | PART::ALL);
 
 
+  alg_setup->set_body(&body);
+
 
   // body.setLimits(45, 135, SIDE::LEFT, LEG::FRONT, PART::INNER);
   // body.setLimits(72, 162, SIDE::LEFT, LEG::FRONT, PART::MIDDLE);
@@ -67,7 +75,7 @@ int main(){
 
 
   while(true){
-    loop(body);
+    loop(alg_setup);
   }
 
   return 0;
