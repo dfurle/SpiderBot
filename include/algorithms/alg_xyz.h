@@ -50,7 +50,7 @@ public:
   }
 
   // returns if angle is returned
-  bool get_input(int& x, int& y){
+  bool get_input(int& x, int& y, int& z){
     printf("  [ fr mr rr fl ml rl trir tril lall ]\n");
     printf("     '+' -    prefix: append to   current selection\n");
     printf("     '-' -    prefix: remove from current selection\n");
@@ -60,10 +60,14 @@ public:
     std::getline(std::cin, in);
 
     try{
-      std::string str_x = in.substr(0,in.find(' '));
-      std::string str_y = in.substr(in.find(' '));
+      int first = in.find(' ');
+      int second = in.find(' ', first+1);
+      std::string str_x = in.substr(0,first);
+      std::string str_y = in.substr(first,second);
+      std::string str_z = in.substr(second);
       x = std::stoi(str_x);
       y = std::stoi(str_y);
+      z = std::stoi(str_z);
       return true;
     } catch(std::invalid_argument& e){
     } catch(std::out_of_range& e){}
@@ -76,10 +80,9 @@ public:
   void step(){
     printf("\n\n\n\n\n\n");
     int x, y, z;
-    z = 30;
 
     print_menu(*body);
-    if(get_input(x, y)){
+    if(get_input(x, y, z)){
       if(this->bits)
         body->setXYZ(x, y, z, this->bits);
       else

@@ -22,8 +22,8 @@
 // #define MID_L 60.
 // #define OUT_L 80.
 #define INN_L 45.
-#define MID_L 104.
-#define OUT_L 208.
+#define MID_L 115.
+#define OUT_L 230.
 #define MID_L2 MID_L*MID_L
 #define OUT_L2 OUT_L*OUT_L
 

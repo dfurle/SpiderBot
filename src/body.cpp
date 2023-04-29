@@ -27,7 +27,6 @@ Leg* Body::getLeg(int bits){
     return nullptr;
   }
   leg--;
-  printf("getLet leg: %d\n",leg);
   return legs[leg%6]; // shouldnt overflow but just in case...
 }
 

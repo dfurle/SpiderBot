@@ -80,7 +80,7 @@ void Servo::directDrive(float angle){
 
 void Servo::set(float angle){
   this->ad = angle;
-  printf("setting angle %f\n",angle);
+  printf("angle %f\n",angle);
   angle = convert_angle(angle);
   this->currentAngle = angle;
   this->a = angle;
@@ -88,8 +88,8 @@ void Servo::set(float angle){
   float val = g.map(angle,0.f,180.f,LMIN,LMAX);
   debug(4, " PWM      :", val);
   // g.pwm.set_pwm(id,0,val);
-  printf("angle : %f\n",angle);
-  printf("pwm_ms: %f\n",val);
+  // printf("angle : %f\n",angle); // debug
+  // printf("pwm_ms: %f\n",val);   // debug
   if(id < 16){
     g.left.set_pwm_ms(id,val);
   } else {

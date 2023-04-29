@@ -21,7 +21,7 @@ int main(){
   body.initialize();
 
   body.setLimits(45, 135, LEG::ALL | PART::INNER);
-  body.setLimits(72, 162, LEG::ALL | PART::MIDDLE);
+  body.setLimits(0, 160, LEG::ALL | PART::MIDDLE);
   body.setLimits(0, 180, LEG::ALL | PART::OUTER);
 
   alg_setup->set_body(&body);
