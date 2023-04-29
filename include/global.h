@@ -1,9 +1,12 @@
 #pragma once
 
 #include <PCA/PCA9685.h>
-#include <string.h>
+// #include <string.h>
 #include <cmath>
 #include <unistd.h>
+#include <map>
+#include <iostream>
+#include <string>
 
 // --- TODO: figure out what is best to use with many servos. ---
 #define LMIN 0.5f  // 80
@@ -28,37 +31,47 @@
 #define DEG_TO_RAD 0.017453
 // #define M_PI 3.141592
 
-#define LF 0
-#define LM 1
-#define LB 2
 
-#define RF 3
-#define RM 4
-#define RB 5
+#define id_FL 0
+#define id_ML 1
+#define id_RL 2
 
+#define id_FR 3
+#define id_MR 4
+#define id_RR 5
 
-class SIDE{ 
-public:
-  static const unsigned int LEFT = 1;
-  static const unsigned int RIGHT = 1<<1;
-  static const unsigned int ALL = LEFT | RIGHT;
-  static const unsigned int MIN=0;
-};
 class LEG {
 public:
-  static const unsigned int FRONT = 1<<2;
-  static const unsigned int MIDDLE=1<<3;
-  static const unsigned int BACK=1<<4;
-  static const unsigned int ALL = FRONT | MIDDLE | BACK;
-  static const unsigned int MIN=2;
+  static const unsigned int MIN = 0;
+  static const unsigned int FRONT_LEFT  = 1<<0;
+  static const unsigned int MIDDLE_LEFT = 1<<1;
+  static const unsigned int REAR_LEFT   = 1<<2;
+  static const unsigned int FRONT_RIGHT  = 1<<3;
+  static const unsigned int MIDDLE_RIGHT = 1<<4;
+  static const unsigned int REAR_RIGHT   = 1<<5;
+
+  static const unsigned int FL = FRONT_LEFT;
+  static const unsigned int ML = MIDDLE_LEFT;
+  static const unsigned int RL = REAR_LEFT;
+  static const unsigned int FR = FRONT_RIGHT;
+  static const unsigned int MR = MIDDLE_RIGHT;
+  static const unsigned int RR = REAR_RIGHT;
+  static const unsigned int LEFT = FL | ML | RL;
+  static const unsigned int RIGHT = FR | MR | RR;
+  static const unsigned int ALL = LEFT | RIGHT;
 };
 class PART{
 public:
-  static const unsigned int INNER = 1<<5;
-  static const unsigned int MIDDLE=1<<6;
-  static const unsigned int OUTER=1<<7;
+  static const unsigned int MIN = 6;
+  static const unsigned int INNER  = 1<<6;
+  static const unsigned int MIDDLE = 1<<7;
+  static const unsigned int OUTER  = 1<<8;
   static const unsigned int ALL = INNER | MIDDLE | OUTER;
-  static const unsigned int MIN=5;
+};
+class COMMON{
+public:
+  static const unsigned int TRI_RIGHT = LEG::FR | LEG::RR | LEG::ML;
+  static const unsigned int TRI_LEFT  = LEG::FL | LEG::RL | LEG::MR;
 };
 
 
@@ -80,7 +93,7 @@ public:
 
   void print_bin(std::string title, short val);
 
-  int findSetBit(std::uint32_t bits){
+  int findSetBit(int bits){
     if (!(bits && !(bits & (bits-1))))
       return 0;
     return log2(bits) + 1;
@@ -91,6 +104,7 @@ public:
     return v;
   }
 
+  int toBits(std::string str, int current_bits, std::map<std::string, int>& map);
 
   template<class T>
   const T& constrain(const T& x, const T& a, const T& b) {

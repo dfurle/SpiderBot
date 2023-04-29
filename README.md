@@ -10,4 +10,4 @@ Currently working on updating the outer most servos to bigger ones
 
 - Inner  - SG90
 - Middle - MG996
-- Outer  - SG90 (updating to MG996)
+- Outer  - MG996

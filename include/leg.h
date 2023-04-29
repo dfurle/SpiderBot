@@ -7,6 +7,7 @@
 class Leg: public Debuggable{
 public:
   Servo i, m, o;
+  float x, y, z;
 
   void set_debug(int new_debug_level);
 
@@ -15,7 +16,9 @@ public:
   m(side_leg_bits | PART::MIDDLE),
   o(side_leg_bits | PART::OUTER)
   {
-
+    x = 0;
+    y = 0;
+    z = 0;
   };
 
   // https://www.desmos.com/calculator/pxnzvg15nf
