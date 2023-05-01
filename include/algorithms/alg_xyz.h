@@ -7,7 +7,9 @@ class XYZ: public BaseAlgorithm{
 public:
   std::map<std::string, int> index;
 
-  XYZ(){
+  XYZ(Body* body):
+  BaseAlgorithm(body)
+  {
     index["FR"] = LEG::FR;
     index["MR"] = LEG::MR;
     index["RR"] = LEG::RR;

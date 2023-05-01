@@ -9,7 +9,9 @@ public:
   bool adjustedAngle = true;
   std::map<std::string, int> index;
 
-  Setup(){
+  Setup(Body* body):
+  BaseAlgorithm(body)
+  {
     index["FR"] = LEG::FR;
     index["MR"] = LEG::MR;
     index["RR"] = LEG::RR;

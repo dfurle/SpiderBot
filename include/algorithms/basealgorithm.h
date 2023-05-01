@@ -7,9 +7,7 @@ public:
   Body* body;
   int bits = 0;
 
-  BaseAlgorithm(){}
-
-  void set_body(Body* body){
+  BaseAlgorithm(Body* body){
     this->body = body;
   }
 

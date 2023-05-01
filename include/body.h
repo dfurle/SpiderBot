@@ -30,4 +30,5 @@ public:
   void setServos(int angle, int bits);
 
   void setXYZ(int x, int y, int z, int bits);
+  void moveXYZ(int x, int y, int z, int bits);
 };

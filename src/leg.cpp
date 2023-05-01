@@ -11,6 +11,12 @@ void Leg::set_debug(int new_debug_level){
   o.set_debug(debug_level);
 }
 
+void Leg::set_offsets(float rot, float offx, float offy){
+  this->cartesian_rotation = rot * DEG_TO_RAD;
+  this->cartesian_xoffset = offx;
+  this->cartesian_yoffset = offy;
+}
+
 
 // (old) https://www.desmos.com/calculator/pxnzvg15nf
 // (old) https://www.desmos.com/calculator/zwpvstzazw
@@ -46,7 +52,19 @@ void Leg::calcAngles(float theta, float r, float height){
   set_angles(innerA, middleA, outerA);
 }
 
-void Leg::set_catesian(float x, float y, float height){
+void Leg::convert(float& x, float& y, float& z){
+  x += cartesian_xoffset;
+  y += cartesian_yoffset;
+
+  x = x*cos(cartesian_rotation) - y*sin(cartesian_rotation);
+  y = x*sin(cartesian_rotation) + y*cos(cartesian_rotation);
+}
+
+void Leg::set_cartesian(float x, float y, float height){
+  convert(x,y,z);
+
+  printf("set xyz %4.0f %4.0f %4.0f\n",x,y,height);
+
   this->x = x;
   this->y = y;
   this->z = height;
@@ -63,6 +81,11 @@ void Leg::set_catesian(float x, float y, float height){
   // set_angles(innerA, middleA, outerA);
 
   calcAngles(theta, r, height);
+}
+
+void Leg::move_cartesian(float x, float y, float height){
+  convert(x,y,z);
+  set_cartesian(this->x + x, this->y + y, this->z + height);
 }
 
 void Leg::test_set_r(float r, float height){

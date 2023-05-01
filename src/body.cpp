@@ -15,6 +15,14 @@ void Body::initialize(){
   legs[id_FR] = new Leg(LEG::FRONT_RIGHT);
   legs[id_MR] = new Leg(LEG::MIDDLE_RIGHT);
   legs[id_RR] = new Leg(LEG::REAR_RIGHT);
+
+  legs[id_FR]->set_offsets(45,  0, 40);
+  legs[id_MR]->set_offsets(90,  0, 0);
+  legs[id_RR]->set_offsets(135, 0, 40);
+
+  legs[id_FL]->set_offsets(-45,  0, -40);
+  legs[id_ML]->set_offsets(-90,  0, 0);
+  legs[id_RL]->set_offsets(-135, 0, -40);
 }
 
 
@@ -99,6 +107,10 @@ void Body::setServos(int angle, int bits){
   runForServos([&](Servo* s){s->set(angle);}, bits);
 }
 
-void Body::setXYZ(int x, int y, int z, int bits){
-  runForLegs([&](Leg* l){l->set_catesian(x,y,z);}, bits);
+void Body::setXYZ(int x, int y, int z, int leg_bits){
+  runForLegs([&](Leg* l){l->set_cartesian(x,y,z);}, leg_bits);
+}
+
+void Body::moveXYZ(int x, int y, int z, int leg_bits){
+  runForLegs([&](Leg* l){l->move_cartesian(x,y,z);}, leg_bits);
 }

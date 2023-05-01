@@ -8,6 +8,9 @@ class Leg: public Debuggable{
 public:
   Servo i, m, o;
   float x, y, z;
+  float cartesian_rotation = 0;
+  float cartesian_xoffset = 0;
+  float cartesian_yoffset = 0;
 
   void set_debug(int new_debug_level);
 
@@ -21,11 +24,15 @@ public:
     z = 0;
   };
 
+  void set_offsets(float rot, float offx, float offy);
+  void convert(float& x, float& y, float& z);
+
   // https://www.desmos.com/calculator/pxnzvg15nf
   // idk if link will be dead after a while or not...
   // void calcAngles(float theta, float r, float height, float& innerA, float& middleA, float& outerA){
   void calcAngles(float theta, float r, float height);
-  void set_catesian(float x, float y, float height);
+  void set_cartesian(float x, float y, float height);
+  void move_cartesian(float x, float y, float height);
   void test_set_r(float r, float height);
   void set_angles(float innerA, float middleA, float outerA);
 
