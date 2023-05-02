@@ -52,7 +52,7 @@ public:
   }
 
   // returns if angle is returned
-  bool get_input(int& x, int& y, int& z){
+  int get_input(int& x, int& y, int& z){
     printf("  [ fr mr rr fl ml rl trir tril lall ]\n");
     printf("     '+' -    prefix: append to   current selection\n");
     printf("     '-' -    prefix: remove from current selection\n");
@@ -64,19 +64,32 @@ public:
     try{
       int first = in.find(' ');
       int second = in.find(' ', first+1);
-      std::string str_x = in.substr(0,first);
-      std::string str_y = in.substr(first,second);
-      std::string str_z = in.substr(second);
-      x = std::stoi(str_x);
-      y = std::stoi(str_y);
-      z = std::stoi(str_z);
-      return true;
+      int third = in.find(' ', second+1);
+      std::string m = in.substr(0,first);
+      std::string str_x, str_y, str_z;
+      if(m == "m"){
+        std::string str_x = in.substr(first,second);
+        std::string str_y = in.substr(second,third);
+        std::string str_z = in.substr(third);
+        x = std::stoi(str_x);
+        y = std::stoi(str_y);
+        z = std::stoi(str_z);
+        return 2;
+      }else{
+        std::string str_x = in.substr(0,first);
+        std::string str_y = in.substr(first,second);
+        std::string str_z = in.substr(second);
+        x = std::stoi(str_x);
+        y = std::stoi(str_y);
+        z = std::stoi(str_z);
+        return 1;
+      }
     } catch(std::invalid_argument& e){
     } catch(std::out_of_range& e){}
 
 
     this->bits = g.toBits(in, this->bits, index); // TODO: add check for properness
-    return false;
+    return 0;
   }
 
   void step(){
@@ -84,10 +97,14 @@ public:
     int x, y, z;
 
     print_menu(*body);
-    if(get_input(x, y, z)){
-      if(this->bits)
-        body->setXYZ(x, y, z, this->bits);
-      else
+    int in = get_input(x, y, z);
+    if(in){
+      if(this->bits){
+        if(in == 1)
+          body->setXYZ(x, y, z, this->bits);
+        else if(in == 2)
+          body->moveXYZ(x,y,z, this->bits);
+      }else
         printf("bits not set\n");
     }
   }

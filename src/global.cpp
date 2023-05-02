@@ -65,7 +65,7 @@ void Global::print_bin(std::string title, short val){
   unsigned short bit = 1;
   bin[str_size-1] = '\0';
   for(int i = 0; i < str_size-1; i++){
-    if(i == 6 || i == 9){
+    if(i == 6 || i == 10){
       bin[str_size-2-i] = ' ';
     } else {
       bin[str_size-2-i] = ((bit & val) == 0) ? '0' : '1';

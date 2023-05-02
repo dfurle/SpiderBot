@@ -8,21 +8,24 @@ Body::Body(){
 // WARNING, CAUSES MEMORY LEAK WHEN RAN MULTIPLE TIMES!!!
 void Body::initialize(){
   legs.resize(6);
-  legs[id_FL] = new Leg(LEG::FRONT_LEFT);
-  legs[id_ML] = new Leg(LEG::MIDDLE_LEFT);
-  legs[id_RL] = new Leg(LEG::REAR_LEFT);
-
   legs[id_FR] = new Leg(LEG::FRONT_RIGHT);
   legs[id_MR] = new Leg(LEG::MIDDLE_RIGHT);
   legs[id_RR] = new Leg(LEG::REAR_RIGHT);
 
-  legs[id_FR]->set_offsets(45,  0, 40);
-  legs[id_MR]->set_offsets(90,  0, 0);
-  legs[id_RR]->set_offsets(135, 0, 40);
+  legs[id_FL] = new Leg(LEG::FRONT_LEFT);
+  legs[id_ML] = new Leg(LEG::MIDDLE_LEFT);
+  legs[id_RL] = new Leg(LEG::REAR_LEFT);
 
-  legs[id_FL]->set_offsets(-45,  0, -40);
-  legs[id_ML]->set_offsets(-90,  0, 0);
-  legs[id_RL]->set_offsets(-135, 0, -40);
+  int si = 100;
+  int mi = 130;
+
+  legs[id_FR]->set_offsets(-45,  si, si);
+  legs[id_MR]->set_offsets(-90,  0, mi);
+  legs[id_RR]->set_offsets(-135, -si, si);
+
+  legs[id_FL]->set_offsets(45,  si, si, true);
+  legs[id_ML]->set_offsets(90,  0, mi, true);
+  legs[id_RL]->set_offsets(135, -si, si, true);
 }
 
 
@@ -113,4 +116,8 @@ void Body::setXYZ(int x, int y, int z, int leg_bits){
 
 void Body::moveXYZ(int x, int y, int z, int leg_bits){
   runForLegs([&](Leg* l){l->move_cartesian(x,y,z);}, leg_bits);
+}
+
+void Body::setScaling(float scaling, int bits){
+  runForServos([&](Servo* s){s->scaling = scaling;}, bits);
 }

@@ -29,12 +29,10 @@ float Servo::convert_angle(float angle){
   float hLim0 = limits[0];
   float hLim1 = limits[1];
   float diff = hLim1 - hLim0;
-  if(part == PART::OUTER){
-    angle += 15;
-  }
   switch(part){
   case PART::INNER:
     debug(3, "  Original : ", angle);
+    angle *= scaling;
     angle = g.constrain(angle, -diff/2, diff/2);
     debug(3, "  Constrain: ", angle);
     angle = g.map(angle, -diff/2, diff/2, hLim0, hLim1);
@@ -42,6 +40,7 @@ float Servo::convert_angle(float angle){
     return angle;
   case PART::MIDDLE:
     debug(3, "  Original : ", angle);
+    angle *= scaling;
     angle = g.constrain(angle, 0.f, diff);
     debug(3, "  Constrain: ", angle);
     angle = g.map(angle, 0.f, diff, hLim1, hLim0); // THIS ONE IS FLIPPED!
@@ -49,7 +48,7 @@ float Servo::convert_angle(float angle){
     return angle;
   case PART::OUTER:
     debug(3, "  Original : ", angle);
-    angle *= 80./90;
+    angle *= scaling;
     debug(3, "  Adjusted : ", angle);
     angle = g.constrain(angle, 0.f, diff);
     debug(3, "  Constrain: ", angle);
@@ -67,9 +66,9 @@ void Servo::directDrive(float angle){
   this->a = angle;
   float val = g.map(angle, 0.f, 180.f, LMIN, LMAX);
   if(id < 16){
-    g.left.set_pwm_ms(id,val);
+    g.right.set_pwm_ms(id,val);
   } else {
-    g.right.set_pwm_ms(id%16,val);
+    g.left.set_pwm_ms(id%16,val);
   }
 }
 
@@ -87,8 +86,8 @@ void Servo::set(float angle){
   // printf("angle : %f\n",angle); // debug
   // printf("pwm_ms: %f\n",val);   // debug
   if(id < 16){
-    g.left.set_pwm_ms(id,val);
+    g.right.set_pwm_ms(id,val);
   } else {
-    g.right.set_pwm_ms(id%16,val);
+    g.left.set_pwm_ms(id%16,val);
   }
 }

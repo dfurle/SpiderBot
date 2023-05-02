@@ -32,23 +32,24 @@
 // #define M_PI 3.141592
 
 
-#define id_FL 0
-#define id_ML 1
-#define id_RL 2
+#define id_FR 0
+#define id_MR 1
+#define id_RR 2
 
-#define id_FR 3
-#define id_MR 4
-#define id_RR 5
+#define id_FL 3
+#define id_ML 4
+#define id_RL 5
+
 
 class LEG {
 public:
   static const unsigned int MIN = 0;
-  static const unsigned int FRONT_LEFT  = 1<<0;
-  static const unsigned int MIDDLE_LEFT = 1<<1;
-  static const unsigned int REAR_LEFT   = 1<<2;
-  static const unsigned int FRONT_RIGHT  = 1<<3;
-  static const unsigned int MIDDLE_RIGHT = 1<<4;
-  static const unsigned int REAR_RIGHT   = 1<<5;
+  static const unsigned int FRONT_RIGHT  = 1<<0;
+  static const unsigned int MIDDLE_RIGHT = 1<<1;
+  static const unsigned int REAR_RIGHT   = 1<<2;
+  static const unsigned int FRONT_LEFT  = 1<<3;
+  static const unsigned int MIDDLE_LEFT = 1<<4;
+  static const unsigned int REAR_LEFT   = 1<<5;
 
   static const unsigned int FL = FRONT_LEFT;
   static const unsigned int ML = MIDDLE_LEFT;
@@ -80,15 +81,8 @@ class Global{
 public:
   Global();
 
-  const int hard_limits[4][2] = {
-    {0, 90}, // INNER
-    {45, 172}, // MIDDLE
-    {0, 115}, // OUTER
-    {0,0} // ignore
-  };
-
-  PiPCA9685::PCA9685 left{"/dev/i2c-1",0x40};
-  PiPCA9685::PCA9685 right{"/dev/i2c-1",0x41};
+  PiPCA9685::PCA9685 right{"/dev/i2c-1",0x40};
+  PiPCA9685::PCA9685 left{"/dev/i2c-1",0x41};
 
 
   void print_bin(std::string title, short val);

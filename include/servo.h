@@ -9,6 +9,7 @@ public:
   int id;
   float currentAngle;
   int a, ad;
+  float scaling = 1;
 
   int limits[2];
 

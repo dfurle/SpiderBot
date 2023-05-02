@@ -11,10 +11,11 @@ void Leg::set_debug(int new_debug_level){
   o.set_debug(debug_level);
 }
 
-void Leg::set_offsets(float rot, float offx, float offy){
+void Leg::set_offsets(float rot, float offx, float offy, bool flip){
+  this->isFlipped = flip;
   this->cartesian_rotation = rot * DEG_TO_RAD;
   this->cartesian_xoffset = offx;
-  this->cartesian_yoffset = offy;
+  this->cartesian_yoffset = offy * (isFlipped ? -1 : 1);
 }
 
 
@@ -27,11 +28,14 @@ void Leg::calcAngles(float theta, float r, float height){
   r = r - INN_L;
   float r2 = r*r;
   // this is the height from middle servo to base (in this case lowest point of my leg)
-  height += 38; // TODO: define somewhere;
+  // height += 38; // TODO: define somewhere;
   float height2 = height*height;
   float innerA = theta;
-  float middleA = RAD_TO_DEG*(M_PI-atan(r/height)-acos((MID_L2+r2+height2-OUT_L2)/(2*MID_L*sqrt(r2+height2))));
+  printf("t r h: %f %f %f\n",theta, r, height);
+  // float middleA = RAD_TO_DEG*(M_PI-atan(r/height)-acos((MID_L2+r2+height2-OUT_L2)/(2*MID_L*sqrt(r2+height2))));
+  float middleA = RAD_TO_DEG*(M_PI-atan2(r,height)-acos((MID_L2+r2+height2-OUT_L2)/(2*MID_L*sqrt(r2+height2))));
   float outerA  = RAD_TO_DEG*(M_PI-acos((MID_L2+OUT_L2-r2-height2)/(2*MID_L*OUT_L)));
+  printf("i m o: %f %f %f\n",innerA, middleA, outerA);
 
   // TODO: Make this prettier
   if(debug(-1,-1)){
@@ -53,14 +57,30 @@ void Leg::calcAngles(float theta, float r, float height){
 }
 
 void Leg::convert(float& x, float& y, float& z){
-  x += cartesian_xoffset;
-  y += cartesian_yoffset;
+  y = y * (isFlipped ? -1 : 1);
+  float tmpx = x + cartesian_xoffset;
+  float tmpy = y + cartesian_yoffset;
+  printf("cartesian: %4.0f %4.0f %4.0f\n", tmpx, tmpy, z);
 
-  x = x*cos(cartesian_rotation) - y*sin(cartesian_rotation);
-  y = x*sin(cartesian_rotation) + y*cos(cartesian_rotation);
+  x = tmpx*cos(cartesian_rotation) - tmpy*sin(cartesian_rotation);
+  y = tmpx*sin(cartesian_rotation) + tmpy*cos(cartesian_rotation);
+  printf("cartesian: %4.0f %4.0f %4.0f\n", x, y, z);
+}
+
+void Leg::convert_back(float& x, float& y, float& z){
+
+  int tmpx = x*cos(-cartesian_rotation) - y*sin(-cartesian_rotation);
+  int tmpy = x*sin(-cartesian_rotation) + y*cos(-cartesian_rotation);
+  printf("cartesian: %4.0f %4.0f %4.0f\n", tmpx, tmpy, z);
+
+  x = tmpx - cartesian_xoffset;
+  y = tmpy - cartesian_yoffset;
+  y = y * (isFlipped ? -1 : 1);
+  printf("cartesian: %4.0f %4.0f %4.0f\n", x, y, z);
 }
 
 void Leg::set_cartesian(float x, float y, float height){
+  printf("cartesian: %4.0f %4.0f %4.0f\n", x, y, height);
   convert(x,y,z);
 
   printf("set xyz %4.0f %4.0f %4.0f\n",x,y,height);
@@ -70,7 +90,7 @@ void Leg::set_cartesian(float x, float y, float height){
   this->z = height;
   
   float r = sqrt(x*x + y*y);
-  float theta = atan2(y,x) * RAD_TO_DEG;
+  float theta = atan2(-y,x) * RAD_TO_DEG;
 
   debug(5, " catesian      r = ", r);
   debug(5, " cartesian theta = ", theta);
@@ -84,8 +104,15 @@ void Leg::set_cartesian(float x, float y, float height){
 }
 
 void Leg::move_cartesian(float x, float y, float height){
-  convert(x,y,z);
-  set_cartesian(this->x + x, this->y + y, this->z + height);
+  float tmpx = this->x;
+  float tmpy = this->y;
+  float tmpz = this->z;
+  convert_back(tmpx, tmpy, tmpz);
+  printf("tmp: xyz %f %f %f\n",tmpx, tmpy, tmpz);
+  tmpx += x;
+  tmpy += y;
+  tmpz += height;
+  set_cartesian(tmpx, tmpy, tmpz);
 }
 
 void Leg::test_set_r(float r, float height){

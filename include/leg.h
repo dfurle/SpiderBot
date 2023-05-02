@@ -11,6 +11,7 @@ public:
   float cartesian_rotation = 0;
   float cartesian_xoffset = 0;
   float cartesian_yoffset = 0;
+  bool isFlipped = false;
 
   void set_debug(int new_debug_level);
 
@@ -24,8 +25,9 @@ public:
     z = 0;
   };
 
-  void set_offsets(float rot, float offx, float offy);
+  void set_offsets(float rot, float offx, float offy, bool flip = false);
   void convert(float& x, float& y, float& z);
+  void convert_back(float& x, float& y, float& z);
 
   // https://www.desmos.com/calculator/pxnzvg15nf
   // idk if link will be dead after a while or not...
