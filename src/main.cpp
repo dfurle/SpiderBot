@@ -21,9 +21,12 @@ int main(){
   body.setLimits(0, 160, LEG::ALL | PART::MIDDLE);
   body.setLimits(0, 180, LEG::ALL | PART::OUTER);
 
-  body.setScaling(160./155., LEG::FL | PART::OUTER);
-  body.setScaling(170./155., LEG::ML | PART::OUTER);
-  body.setScaling(165./155., LEG::RL | PART::OUTER);
+  body.setLimits(0, 150, LEG::FRONT_LEFT | PART::MIDDLE);
+  body.setLimits(10, 180, LEG::REAR_RIGHT | PART::OUTER);
+
+  // body.setScaling(160./155., LEG::FL | PART::OUTER);
+  // body.setScaling(170./155., LEG::ML | PART::OUTER);
+  // body.setScaling(165./155., LEG::RL | PART::OUTER);
 
 
 
@@ -31,17 +34,16 @@ int main(){
   algo::XYZ*   alg_xyz   = new algo::XYZ(&body);
   algo::Walk*  alg_walk  = new algo::Walk(&body);
 
-  // alg_walk->init(100);
+  alg_walk->init(100);
 
   while(true){
     // loop(alg_setup);
-    loop(alg_xyz);
-    // loop(alg_walk);
+    // loop(alg_xyz);
+    loop(alg_walk);
   }
 
   return 0;
 }
-
 
 
 void loop(algo::BaseAlgorithm* alg){

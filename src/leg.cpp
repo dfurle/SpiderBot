@@ -56,38 +56,39 @@ void Leg::calcAngles(float theta, float r, float height){
   set_angles(innerA, middleA, outerA);
 }
 
-void Leg::convert(float& x, float& y, float& z){
-  y = y * (isFlipped ? -1 : 1);
-  float tmpx = x + cartesian_xoffset;
-  float tmpy = y + cartesian_yoffset;
-  printf("cartesian: %4.0f %4.0f %4.0f\n", tmpx, tmpy, z);
+void Leg::convert(Vec3f& pos){
+  pos.y = pos.y * (isFlipped ? -1 : 1);
+  Vec3f tmp = pos + offset;
+  printf("cartesian: %4.0f %4.0f %4.0f\n", tmp.x, tmp.y, tmp.z);
 
-  x = tmpx*cos(cartesian_rotation) - tmpy*sin(cartesian_rotation);
-  y = tmpx*sin(cartesian_rotation) + tmpy*cos(cartesian_rotation);
-  printf("cartesian: %4.0f %4.0f %4.0f\n", x, y, z);
+  pos.x = tmp.x*cos(cartesian_rotation) - tmp.y*sin(cartesian_rotation);
+  pos.y = tmp.x*sin(cartesian_rotation) + tmp.y*cos(cartesian_rotation);
+  printf("cartesian: %4.0f %4.0f %4.0f\n", pos.x, pos.y, pos.z);
 }
 
-void Leg::convert_back(float& x, float& y, float& z){
+void Leg::convert_back(Vec3f& pos){
+  Vec3f tmp;
+  tmp.x = pos.x*cos(-cartesian_rotation) - pos.y*sin(-cartesian_rotation);
+  tmp.y = pos.x*sin(-cartesian_rotation) + pos.y*cos(-cartesian_rotation);
+  tmp.z = pos.z;
+  printf("cartesian: %4.0f %4.0f %4.0f\n", tmp.x, tmp.y, tmp.z);
 
-  int tmpx = x*cos(-cartesian_rotation) - y*sin(-cartesian_rotation);
-  int tmpy = x*sin(-cartesian_rotation) + y*cos(-cartesian_rotation);
-  printf("cartesian: %4.0f %4.0f %4.0f\n", tmpx, tmpy, z);
 
-  x = tmpx - cartesian_xoffset;
-  y = tmpy - cartesian_yoffset;
-  y = y * (isFlipped ? -1 : 1);
-  printf("cartesian: %4.0f %4.0f %4.0f\n", x, y, z);
+  pos = tmp - offset;
+  pos.y = pos.y * (isFlipped ? -1 : 1);
+  pos.z = tmp.z;
+  printf("cartesian: %4.0f %4.0f %4.0f\n", pos.x, pos.y, pos.z);
 }
 
-void Leg::set_cartesian(float x, float y, float height){
-  printf("cartesian: %4.0f %4.0f %4.0f\n", x, y, height);
+void Leg::set_cartesian(float x, float y, float z){
+  printf("cartesian: %4.0f %4.0f %4.0f\n", x, y, z);
   convert(x,y,z);
 
-  printf("set xyz %4.0f %4.0f %4.0f\n",x,y,height);
+  printf("set xyz %4.0f %4.0f %4.0f\n",x,y,z);
 
   this->x = x;
   this->y = y;
-  this->z = height;
+  this->z = z;
   
   float r = sqrt(x*x + y*y);
   float theta = atan2(-y,x) * RAD_TO_DEG;
@@ -100,10 +101,10 @@ void Leg::set_cartesian(float x, float y, float height){
   // calcAngles(theta, r, height, innerA, middleA, outerA);
   // set_angles(innerA, middleA, outerA);
 
-  calcAngles(theta, r, height);
+  calcAngles(theta, r, z);
 }
 
-void Leg::move_cartesian(float x, float y, float height){
+void Leg::move_cartesian(float x, float y, float z){
   float tmpx = this->x;
   float tmpy = this->y;
   float tmpz = this->z;
@@ -111,8 +112,15 @@ void Leg::move_cartesian(float x, float y, float height){
   printf("tmp: xyz %f %f %f\n",tmpx, tmpy, tmpz);
   tmpx += x;
   tmpy += y;
-  tmpz += height;
+  tmpz += z;
   set_cartesian(tmpx, tmpy, tmpz);
+}
+
+void Leg::move_cartesian_speed(float x, float y, float z, float speed){
+  float curr_x = x;
+  float curr_y = y;
+  float curr_z = z;
+  move_cartesian(x, y, z);
 }
 
 void Leg::test_set_r(float r, float height){

@@ -16,16 +16,17 @@ void Body::initialize(){
   legs[id_ML] = new Leg(LEG::MIDDLE_LEFT);
   legs[id_RL] = new Leg(LEG::REAR_LEFT);
 
-  int si = 100;
+  int si_x = 100; // 100
+  int si_y = 100; // 100
   int mi = 130;
 
-  legs[id_FR]->set_offsets(-45,  si, si);
+  legs[id_FR]->set_offsets(-45,  si_x, si_y);
   legs[id_MR]->set_offsets(-90,  0, mi);
-  legs[id_RR]->set_offsets(-135, -si, si);
+  legs[id_RR]->set_offsets(-135, -si_x, si_y);
 
-  legs[id_FL]->set_offsets(45,  si, si, true);
+  legs[id_FL]->set_offsets(45,  si_x, si_y, true);
   legs[id_ML]->set_offsets(90,  0, mi, true);
-  legs[id_RL]->set_offsets(135, -si, si, true);
+  legs[id_RL]->set_offsets(135, -si_x, si_y, true);
 }
 
 
@@ -115,6 +116,10 @@ void Body::setXYZ(int x, int y, int z, int leg_bits){
 }
 
 void Body::moveXYZ(int x, int y, int z, int leg_bits){
+  runForLegs([&](Leg* l){l->move_cartesian(x,y,z);}, leg_bits);
+}
+
+void Body::moveXYZ_speed(int x, int y, int z, float speed, int leg_bits){
   runForLegs([&](Leg* l){l->move_cartesian(x,y,z);}, leg_bits);
 }
 

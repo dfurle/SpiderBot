@@ -31,6 +31,7 @@ public:
 
   void setXYZ(int x, int y, int z, int bits);
   void moveXYZ(int x, int y, int z, int bits);
+  void moveXYZ_speed(int x, int y, int z, float speed, int leg_bits);
 
   void setScaling(float scaling, int bits);
 };

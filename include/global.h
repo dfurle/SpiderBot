@@ -21,9 +21,17 @@
 // #define INN_L 35.
 // #define MID_L 60.
 // #define OUT_L 80.
-#define INN_L 45.
-#define MID_L 115.
-#define OUT_L 230.
+
+// too tall robot
+// #define INN_L 45.
+// #define MID_L 115.
+// #define OUT_L 230.
+
+// new leg robot
+#define INN_L 50.
+#define MID_L 155.
+#define OUT_L 190.
+
 #define MID_L2 MID_L*MID_L
 #define OUT_L2 OUT_L*OUT_L
 
@@ -81,8 +89,8 @@ class Global{
 public:
   Global();
 
-  PiPCA9685::PCA9685 right{"/dev/i2c-1",0x40};
-  PiPCA9685::PCA9685 left{"/dev/i2c-1",0x41};
+  PiPCA9685::PCA9685 right{"/dev/i2c-1",0x41};
+  PiPCA9685::PCA9685 left{"/dev/i2c-1",0x40};
 
 
   void print_bin(std::string title, short val);
