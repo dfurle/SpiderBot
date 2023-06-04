@@ -68,15 +68,18 @@ public:
       int third = in.find(' ', second+1);
       std::string m = in.substr(0,first);
       std::string str_x, str_y, str_z;
-      if(m == "m"){
+      if(m == "m" || m == "s"){
         std::string str_x = in.substr(first,second);
         std::string str_y = in.substr(second,third);
         std::string str_z = in.substr(third);
         x = std::stoi(str_x);
         y = std::stoi(str_y);
         z = std::stoi(str_z);
-        return 2;
-      }else{
+        if(m == "m")
+          return 2;
+        if(m == "s")
+          return 3;
+      } else {
         std::string str_x = in.substr(0,first);
         std::string str_y = in.substr(first,second);
         std::string str_z = in.substr(second);
@@ -105,6 +108,8 @@ public:
           body->setXYZ(Vec3f(x,y,z), this->bits);
         else if(in == 2)
           body->moveXYZ(Vec3f(x,y,z), this->bits);
+        else if(in == 3)
+          body->moveXYZ_speed(Vec3f(x,y,z), 2000, this->bits);
       }else
         printf("bits not set\n");
     }

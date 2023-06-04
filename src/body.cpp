@@ -119,9 +119,21 @@ void Body::moveXYZ(Vec3f pos, int leg_bits){
   runForLegs([&](Leg* l){l->move_cartesian(pos);}, leg_bits);
 }
 
-void Body::moveXYZ_speed(Vec3f pos, float speed, int leg_bits){
-  runForLegs([&](Leg* l){l->move_cartesian(pos);}, leg_bits);
+// May not be well optimized... but should work?
+void Body::moveXYZ_speed(Vec3f target, float time_to_complete, int leg_bits){
+  float current_time = 0;
+  Vec3f delta = target * (10 / time_to_complete); // get delta per iteration
+  
+  while(current_time < time_to_complete){
+    moveXYZ(delta, leg_bits);
+    usleep(10000); // 10ms
+    current_time += 10; // experiment, maybe it doesnt sleep for 10ms or something?
+  }
 }
+
+// void Body::moveXYZ_speed(Vec3f pos, float time_to_complete, int leg_bits){
+//   runForLegs([&](Leg* l){l->move_cartesian(pos);}, leg_bits);
+// }
 
 void Body::setScaling(float scaling, int bits){
   runForServos([&](Servo* s){s->scaling = scaling;}, bits);

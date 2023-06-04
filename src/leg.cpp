@@ -141,10 +141,17 @@ void Leg::move_cartesian(Vec3f pos){
   set_cartesian(tmp);
 }
 
-void Leg::move_cartesian_speed(Vec3f pos, float speed){
-  Vec3f current = this->pos;
-  // move_cartesian();
-}
+// Gonna try to implement this in Body class first
+// void Leg::move_cartesian_speed(Vec3f target, float time_to_complete){
+//   float current_time = 0;
+//   Vec3f delta = target * (10 / time_to_complete); // get delta per iteration
+  
+//   while(current_time < time_to_complete){
+//     move_cartesian(delta);
+//     usleep(10000); // 10ms
+//     current_time += 10; // experiment, maybe it doesnt sleep for 10ms or something?
+//   }
+// }
 
 void Leg::test_set_r(float r, float height){
 
