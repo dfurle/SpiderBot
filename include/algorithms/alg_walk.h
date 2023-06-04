@@ -1,4 +1,5 @@
 #include "algorithms/basealgorithm.h"
+#include "vec.h"
 
 namespace algo{
 
@@ -18,11 +19,11 @@ public:
   void init(int height){
     std::string tmp;
     std::getline(std::cin, tmp);
-    body->setXYZ(0, 0, 0, LEG::ALL);
+    body->setXYZ(Vec3f::zero(), LEG::ALL);
     std::getline(std::cin, tmp);
-    body->moveXYZ(-move_dist, 0, 0, COMMON::TRI_RIGHT);
+    body->moveXYZ(Vec3f::backward(move_dist), COMMON::TRI_RIGHT);
     std::getline(std::cin, tmp);
-    body->moveXYZ(0, 0, height, LEG::ALL);
+    body->moveXYZ(Vec3f::up(height), LEG::ALL);
     std::getline(std::cin, tmp);
   }
 
@@ -30,27 +31,27 @@ public:
   void step(){
     std::string tmp;
     printf("Raise Right\n");
-    body->moveXYZ(0, 0, -raise_height, COMMON::TRI_RIGHT);
+    body->moveXYZ(Vec3f::down(raise_height), COMMON::TRI_RIGHT);
     printf("\n");
 
     printf("Move Left&Right\n");
-    body->moveXYZ(-move_dist, 0, 0, COMMON::TRI_LEFT);
-    body->moveXYZ( move_dist, 0, 0, COMMON::TRI_RIGHT);
+    body->moveXYZ(Vec3f::backward(move_dist), COMMON::TRI_LEFT);
+    body->moveXYZ(Vec3f::forward(move_dist), COMMON::TRI_RIGHT);
     printf("\n");
 
     printf("Lower Right\n");
-    body->moveXYZ(0, 0, raise_height, COMMON::TRI_RIGHT);
+    body->moveXYZ(Vec3f::up(raise_height), COMMON::TRI_RIGHT);
     printf("\n");
     printf("Raise Left\n");
-    body->moveXYZ(0, 0, -raise_height, COMMON::TRI_LEFT);
+    body->moveXYZ(Vec3f::down(raise_height), COMMON::TRI_LEFT);
 
     printf("Move Right&Left\n");
-    body->moveXYZ(-move_dist, 0, 0, COMMON::TRI_RIGHT);
-    body->moveXYZ( move_dist, 0, 0, COMMON::TRI_LEFT);
+    body->moveXYZ(Vec3f::backward(move_dist), COMMON::TRI_RIGHT);
+    body->moveXYZ(Vec3f::forward(move_dist), COMMON::TRI_LEFT);
     printf("\n");
 
     printf("Lower Left\n");
-    body->moveXYZ(0, 0, raise_height, COMMON::TRI_LEFT);
+    body->moveXYZ(Vec3f::up(raise_height), COMMON::TRI_LEFT);
     std::getline(std::cin, tmp);
     printf("\n");
 

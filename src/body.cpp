@@ -111,16 +111,16 @@ void Body::setServos(int angle, int bits){
   runForServos([&](Servo* s){s->set(angle);}, bits);
 }
 
-void Body::setXYZ(int x, int y, int z, int leg_bits){
-  runForLegs([&](Leg* l){l->set_cartesian(x,y,z);}, leg_bits);
+void Body::setXYZ(Vec3f pos, int leg_bits){
+  runForLegs([&](Leg* l){l->set_cartesian(pos);}, leg_bits);
 }
 
-void Body::moveXYZ(int x, int y, int z, int leg_bits){
-  runForLegs([&](Leg* l){l->move_cartesian(x,y,z);}, leg_bits);
+void Body::moveXYZ(Vec3f pos, int leg_bits){
+  runForLegs([&](Leg* l){l->move_cartesian(pos);}, leg_bits);
 }
 
-void Body::moveXYZ_speed(int x, int y, int z, float speed, int leg_bits){
-  runForLegs([&](Leg* l){l->move_cartesian(x,y,z);}, leg_bits);
+void Body::moveXYZ_speed(Vec3f pos, float speed, int leg_bits){
+  runForLegs([&](Leg* l){l->move_cartesian(pos);}, leg_bits);
 }
 
 void Body::setScaling(float scaling, int bits){

@@ -1,5 +1,6 @@
 #pragma once
 #include "algorithms/basealgorithm.h"
+#include "vec.h"
 
 namespace algo{
 
@@ -31,12 +32,12 @@ public:
     std::vector<float> aa;
     aa.resize(12); // 6*2 = 12
     // TODO: fix this damn mess
-    aa[0]  = body.legs[id_FL]->x; aa[1]  = body.legs[id_FL]->y;
-    aa[2]  = body.legs[id_FR]->x; aa[3]  = body.legs[id_FR]->y;
-    aa[4]  = body.legs[id_ML]->x; aa[5]  = body.legs[id_ML]->y;
-    aa[6]  = body.legs[id_MR]->x; aa[7]  = body.legs[id_MR]->y;
-    aa[8]  = body.legs[id_RL]->x; aa[9]  = body.legs[id_RL]->y;
-    aa[10] = body.legs[id_RR]->x; aa[11] = body.legs[id_RR]->y;
+    aa[0]  = body.legs[id_FL]->pos.x; aa[1]  = body.legs[id_FL]->pos.y;
+    aa[2]  = body.legs[id_FR]->pos.x; aa[3]  = body.legs[id_FR]->pos.y;
+    aa[4]  = body.legs[id_ML]->pos.x; aa[5]  = body.legs[id_ML]->pos.y;
+    aa[6]  = body.legs[id_MR]->pos.x; aa[7]  = body.legs[id_MR]->pos.y;
+    aa[8]  = body.legs[id_RL]->pos.x; aa[9]  = body.legs[id_RL]->pos.y;
+    aa[10] = body.legs[id_RR]->pos.x; aa[11] = body.legs[id_RR]->pos.y;
 
     auto it = aa.begin();
     printf("  .     ┌─────┐  ┌─────────┐  ┌─────┐   \n");
@@ -101,9 +102,9 @@ public:
     if(in){
       if(this->bits){
         if(in == 1)
-          body->setXYZ(x, y, z, this->bits);
+          body->setXYZ(Vec3f(x,y,z), this->bits);
         else if(in == 2)
-          body->moveXYZ(x,y,z, this->bits);
+          body->moveXYZ(Vec3f(x,y,z), this->bits);
       }else
         printf("bits not set\n");
     }

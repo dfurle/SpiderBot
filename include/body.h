@@ -1,6 +1,7 @@
 #pragma once
 #include "leg.h"
 #include "global.h"
+#include "vec.h"
 #include <vector>
 
 class Body{
@@ -29,9 +30,9 @@ public:
   // can input multiple bits for servo
   void setServos(int angle, int bits);
 
-  void setXYZ(int x, int y, int z, int bits);
-  void moveXYZ(int x, int y, int z, int bits);
-  void moveXYZ_speed(int x, int y, int z, float speed, int leg_bits);
+  void setXYZ(Vec3f pos, int bits);
+  void moveXYZ(Vec3f pos, int bits);
+  void moveXYZ_speed(Vec3f pos, float speed, int leg_bits);
 
   void setScaling(float scaling, int bits);
 };

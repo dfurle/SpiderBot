@@ -4,6 +4,7 @@
 #include "leg.h"
 #include "global.h"
 #include <iostream>
+#include "vec.h"
 
 
 void test_LOOP_R_INCREASE(Leg* leg, long speed_delay = 30, float height = 45){
@@ -27,12 +28,12 @@ void test_LOOP_Y_INCREASE(Leg* leg, float x = 70, float y_range = 30, long speed
   float min = -y_range;
   float max =  y_range;
   for(float y = min; y <= max; y+=2){
-    leg->set_cartesian(x, y, height);
+    leg->set_cartesian(Vec3f(x, y, height));
     usleep(speed_delay * 1000);
   }
   usleep(100000);
   for(float y = max; y >= min; y-=2){
-    leg->set_cartesian(x, y, height);
+    leg->set_cartesian(Vec3f(x, y, height));
     usleep(speed_delay * 1000);
   }
   usleep(100000);
