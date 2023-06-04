@@ -109,7 +109,7 @@ void Leg::convert_back(Vec3f& pos){
 }
 
 void Leg::set_cartesian(Vec3f pos){
-  if(debug(0))
+  if(debug(2))
     printf("%s (%4.0f %4.0f %4.0f)\n", name.c_str(), pos.x, pos.y, pos.z);
   convert(pos);
 
