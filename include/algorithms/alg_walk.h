@@ -7,8 +7,10 @@ class Walk: public BaseAlgorithm{
 public:
 
   int raise_height = 50;
-  int move_dist = 50;
-  float time_to_move = 100;
+  int move_dist = 60; // 50
+  float time_to_move = 100; // 200
+  float angle = 0 * DEG_TO_RAD;
+
 
   int max_steps = 3;
 
@@ -24,9 +26,9 @@ public:
     std::getline(std::cin, tmp);
     body->setXYZ(Vec3f::zero(), LEG::ALL);
     std::getline(std::cin, tmp);
-    body->moveXYZ(Vec3f::backward(move_dist), COMMON::TRI_RIGHT);
+    body->moveXYZ(Vec3f::backward(move_dist).rotate(angle, 'z'), COMMON::TRI_RIGHT);
     std::getline(std::cin, tmp);
-    body->moveXYZ_speed(Vec3f::up(height), time_to_move, LEG::ALL);
+    body->moveXYZ_speed(Vec3f::up(height).rotate(angle, 'z'), time_to_move, LEG::ALL);
     std::getline(std::cin, tmp);
   }
 
@@ -34,27 +36,27 @@ public:
   void step(){
     std::string tmp;
     printf("Raise Right\n");
-    body->moveXYZ_speed(Vec3f::down(raise_height), time_to_move, COMMON::TRI_RIGHT);
+    body->moveXYZ_speed(Vec3f::down(raise_height).rotate(angle, 'z'), time_to_move, COMMON::TRI_RIGHT);
     printf("\n");
 
     printf("Move Left&Right\n");
-    body->moveXYZ_speed(Vec3f::backward(move_dist), time_to_move, COMMON::TRI_LEFT);
-    body->moveXYZ_speed(Vec3f::forward(move_dist), time_to_move, COMMON::TRI_RIGHT);
+    body->moveXYZ_speed(Vec3f::backward(move_dist).rotate(angle, 'z'), time_to_move, COMMON::TRI_LEFT);
+    body->moveXYZ_speed(Vec3f::forward(move_dist).rotate(angle, 'z'), time_to_move, COMMON::TRI_RIGHT);
     printf("\n");
 
     printf("Lower Right\n");
-    body->moveXYZ_speed(Vec3f::up(raise_height), time_to_move, COMMON::TRI_RIGHT);
+    body->moveXYZ_speed(Vec3f::up(raise_height).rotate(angle, 'z'), time_to_move, COMMON::TRI_RIGHT);
     printf("\n");
     printf("Raise Left\n");
-    body->moveXYZ_speed(Vec3f::down(raise_height), time_to_move, COMMON::TRI_LEFT);
+    body->moveXYZ_speed(Vec3f::down(raise_height).rotate(angle, 'z'), time_to_move, COMMON::TRI_LEFT);
 
     printf("Move Right&Left\n");
-    body->moveXYZ_speed(Vec3f::backward(move_dist), time_to_move, COMMON::TRI_RIGHT);
-    body->moveXYZ_speed(Vec3f::forward(move_dist), time_to_move, COMMON::TRI_LEFT);
+    body->moveXYZ_speed(Vec3f::backward(move_dist).rotate(angle, 'z'), time_to_move, COMMON::TRI_RIGHT);
+    body->moveXYZ_speed(Vec3f::forward(move_dist).rotate(angle, 'z'), time_to_move, COMMON::TRI_LEFT);
     printf("\n");
 
     printf("Lower Left\n");
-    body->moveXYZ_speed(Vec3f::up(raise_height), time_to_move, COMMON::TRI_LEFT);
+    body->moveXYZ_speed(Vec3f::up(raise_height).rotate(angle, 'z'), time_to_move, COMMON::TRI_LEFT);
     printf("\n");
 
     if(max_steps-- <= 0){

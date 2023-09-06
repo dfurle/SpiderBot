@@ -8,11 +8,14 @@ class Body{
 public:
 
   std::vector<Leg*> legs;
+  Vec3f plane_rotation;
 
   Body();
 
   // WARNING, CAUSES MEMORY LEAK WHEN RAN MULTIPLE TIMES!!!
   void initialize();
+
+  void set_plane(Vec3f plane_rotation);
 
   Leg* getLeg(int bits);
 

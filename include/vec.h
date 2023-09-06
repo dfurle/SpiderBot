@@ -78,5 +78,24 @@ public:
     return other;
   }
 
-
+  Vec3f rotate(float angle, char axis){
+    Vec3f tmp;
+    tmp.x = this->x;
+    tmp.y = this->y;
+    tmp.z = this->z;
+    Vec3f pos = tmp;
+    if(axis == 'x'){
+      pos.y =  tmp.y*cos(angle) + tmp.z*sin(angle);
+      pos.z = -tmp.y*sin(angle) + tmp.z*cos(angle);
+    } else if(axis == 'y'){
+      pos.x = tmp.x*cos(angle) - tmp.z*sin(angle);
+      pos.z = tmp.x*sin(angle) + tmp.z*cos(angle);
+    } else if(axis == 'z'){
+      pos.x = tmp.x*cos(angle) - tmp.y*sin(angle);
+      pos.y = tmp.x*sin(angle) + tmp.y*cos(angle);
+    } else {
+      printf("unknown axis!\n\n");
+    }
+    return pos;
+  }
 };

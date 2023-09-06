@@ -1,4 +1,5 @@
 #include "body.h"
+#include <sys/time.h>
 
 Body::Body(){
 
@@ -7,26 +8,42 @@ Body::Body(){
 
 // WARNING, CAUSES MEMORY LEAK WHEN RAN MULTIPLE TIMES!!!
 void Body::initialize(){
-  legs.resize(6);
-  legs[id_FR] = new Leg(LEG::FRONT_RIGHT);
-  legs[id_MR] = new Leg(LEG::MIDDLE_RIGHT);
-  legs[id_RR] = new Leg(LEG::REAR_RIGHT);
+  this->plane_rotation = Vec3f::zero();
 
-  legs[id_FL] = new Leg(LEG::FRONT_LEFT);
-  legs[id_ML] = new Leg(LEG::MIDDLE_LEFT);
-  legs[id_RL] = new Leg(LEG::REAR_LEFT);
+
+  legs.resize(6);
+  legs[id_FR] = new Leg(LEG::FRONT_RIGHT,  &plane_rotation);
+  legs[id_MR] = new Leg(LEG::MIDDLE_RIGHT, &plane_rotation);
+  legs[id_RR] = new Leg(LEG::REAR_RIGHT,   &plane_rotation);
+
+  legs[id_FL] = new Leg(LEG::FRONT_LEFT,  &plane_rotation);
+  legs[id_ML] = new Leg(LEG::MIDDLE_LEFT, &plane_rotation);
+  legs[id_RL] = new Leg(LEG::REAR_LEFT,   &plane_rotation);
 
   int si_x = 100; // 100
   int si_y = 100; // 100
   int mi = 130;
 
-  legs[id_FR]->set_offsets(-45,  si_x, si_y);
-  legs[id_MR]->set_offsets(-90,  0, mi);
-  legs[id_RR]->set_offsets(-135, -si_x, si_y);
 
-  legs[id_FL]->set_offsets(45,  si_x, si_y, true);
-  legs[id_ML]->set_offsets(90,  0, mi, true);
-  legs[id_RL]->set_offsets(135, -si_x, si_y, true);
+  // legs[id_FR]->set_offsets(-45,  si_x, si_y);
+  // legs[id_MR]->set_offsets(-90,  0, mi);
+  // legs[id_RR]->set_offsets(-135, -si_x, si_y);
+
+  // legs[id_FL]->set_offsets(45,  si_x, si_y, true);
+  // legs[id_ML]->set_offsets(90,  0, mi, true);
+  // legs[id_RL]->set_offsets(135, -si_x, si_y, true);
+
+  legs[id_FR]->set_offsets(-45,  Vec3f( 70, 55, 0), Vec3f(si_x, si_y, 0));
+  legs[id_MR]->set_offsets(-90,  Vec3f(  0, 85, 0), Vec3f(0, mi, 0));
+  legs[id_RR]->set_offsets(-135, Vec3f(-70, 55, 0), Vec3f(-si_x, si_y, 0));
+
+  legs[id_FL]->set_offsets(45,  Vec3f( 70, -55, 0), Vec3f(si_x, si_y, 0), true);
+  legs[id_ML]->set_offsets(90,  Vec3f(  0, -85, 0), Vec3f(0, mi, 0), true);
+  legs[id_RL]->set_offsets(135, Vec3f(-70, -55, 0), Vec3f(-si_x, si_y, 0), true);
+}
+
+void Body::set_plane(Vec3f plane_rotation){
+  this->plane_rotation = plane_rotation * DEG_TO_RAD;
 }
 
 
@@ -116,18 +133,35 @@ void Body::setXYZ(Vec3f pos, int leg_bits){
 }
 
 void Body::moveXYZ(Vec3f pos, int leg_bits){
-  runForLegs([&](Leg* l){l->move_cartesian(pos);}, leg_bits);
+  runForLegs([&](Leg* l){
+    l->move_cartesian(pos);
+    }, leg_bits);
 }
 
 // May not be well optimized... but should work?
 void Body::moveXYZ_speed(Vec3f target, float time_to_complete, int leg_bits){
   float current_time = 0;
-  Vec3f delta = target * (10 / time_to_complete); // get delta per iteration
+  Vec3f delta = target * (10. / time_to_complete); // get delta per iteration
   
+  // while(current_time < time_to_complete){
+  //   moveXYZ(delta, leg_bits);
+  //   usleep(100e3); // 100ms
+  //   current_time += 100.; // experiment, maybe it doesnt sleep for 10ms or something?
+  // }
+
+
+  struct timeval  tv1, tv2;
   while(current_time < time_to_complete){
     moveXYZ(delta, leg_bits);
-    usleep(10000); // 10ms
-    current_time += 10; // experiment, maybe it doesnt sleep for 10ms or something?
+    gettimeofday(&tv1, NULL);
+    float timePassed = 0;
+    // Very jank code to make the most precise timing... sometimes it takes too long in the sleep/ or idk and slows down the movement
+    do{
+      usleep(1);
+      gettimeofday(&tv2, NULL);
+      timePassed = (float) (tv2.tv_usec - tv1.tv_usec) + (float) (tv2.tv_sec - tv1.tv_sec) * 1e6;
+    }while(timePassed < 10e3); // 10ms
+    current_time += 10.; // experiment, maybe it doesnt sleep for 10ms or something?
   }
 }
 

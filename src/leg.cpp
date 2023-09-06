@@ -5,11 +5,13 @@
 
 
 
-Leg::Leg(int leg_bits):
+Leg::Leg(int leg_bits, Vec3f* plane_rotation):
 i(leg_bits | PART::INNER),
 m(leg_bits | PART::MIDDLE),
 o(leg_bits | PART::OUTER)
 {
+  this->plane_rotation = plane_rotation;
+
   switch(leg_bits){
     case LEG::FRONT_RIGHT:
       name = "FR"; break;
@@ -33,12 +35,24 @@ void Leg::set_debug(int new_debug_level){
   o.set_debug(debug_level);
 }
 
-void Leg::set_offsets(float rot, float offx, float offy, bool flip){
+// void Leg::set_offsets(float rot, float offx, float offy, bool flip){
+//   this->isFlipped = flip;
+//   this->cartesian_rotation = rot * DEG_TO_RAD;
+//   this->offset.x = offx;
+//   this->offset.y = offy * (isFlipped ? -1 : 1);
+// }
+
+void Leg::set_offsets(float rotation, Vec3f centerOffset, Vec3f zeroOffset, bool flip){
   this->isFlipped = flip;
-  this->cartesian_rotation = rot * DEG_TO_RAD;
-  this->offset.x = offx;
-  this->offset.y = offy * (isFlipped ? -1 : 1);
+
+  // centerOffset.y *= (isFlipped ? -1 : 1);
+  zeroOffset.y   *= (isFlipped ? -1 : 1);
+
+  this->centerOffset = centerOffset;
+  this->zeroOffset = zeroOffset;
+  this->rotation = rotation * DEG_TO_RAD;
 }
+
 
 
 // (old) https://www.desmos.com/calculator/pxnzvg15nf
@@ -79,41 +93,78 @@ void Leg::calcAngles(float theta, float r, float height){
   }
   set_angles(innerA, middleA, outerA);
 }
+// void Leg::convert(Vec3f& pos){
+//   pos.y = pos.y * (isFlipped ? -1 : 1);
+//   Vec3f tmp = pos + offset;
+//   if(debug(4))
+//     printf("cartesian: %4.0f %4.0f %4.0f\n", tmp.x, tmp.y, tmp.z);
+
+//   pos.x = tmp.x*cos(cartesian_rotation) - tmp.y*sin(cartesian_rotation);
+//   pos.y = tmp.x*sin(cartesian_rotation) + tmp.y*cos(cartesian_rotation);
+//   if(debug(4))
+//     printf("cartesian: %4.0f %4.0f %4.0f\n", pos.x, pos.y, pos.z);
+// }
+
+// void Leg::convert_back(Vec3f& pos){
+//   Vec3f tmp;
+//   tmp.x = pos.x*cos(-cartesian_rotation) - pos.y*sin(-cartesian_rotation);
+//   tmp.y = pos.x*sin(-cartesian_rotation) + pos.y*cos(-cartesian_rotation);
+//   tmp.z = pos.z;
+//   if(debug(4))
+//     printf("cartesian: %4.0f %4.0f %4.0f\n", tmp.x, tmp.y, tmp.z);
+
+
+//   pos = tmp - offset;
+//   pos.y = pos.y * (isFlipped ? -1 : 1);
+//   pos.z = tmp.z;
+//   if(debug(4))
+//     printf("cartesian: %4.0f %4.0f %4.0f\n", pos.x, pos.y, pos.z);
+// }
+
+
 
 void Leg::convert(Vec3f& pos){
-  pos.y = pos.y * (isFlipped ? -1 : 1);
-  Vec3f tmp = pos + offset;
-  if(debug(4))
-    printf("cartesian: %4.0f %4.0f %4.0f\n", tmp.x, tmp.y, tmp.z);
+  Vec3f zeroPos = centerOffset + zeroOffset;
+  Vec3f rotPos = zeroPos;
+  // if(debug(0))
+  //   printf(" cartesian: %4.0f %4.0f %4.0f\n", rotPos.x, rotPos.y, rotPos.z);
+  rotPos = rotPos.rotate(plane_rotation->y, 'y');
+  rotPos = rotPos.rotate(plane_rotation->x, 'x');
+  // if(debug(0))
+  //   printf(" rotated cartesian: %4.0f %4.0f %4.0f\n", rotPos.x, rotPos.y, rotPos.z);
+  Vec3f difference = zeroPos - rotPos;
+  difference.y = difference.y  * (isFlipped ? -1 : 1);
+  // if(debug(0))
+  //   printf(" flip diff: %4.0f %4.0f %4.0f\n", difference.x, difference.y, difference.z);
+  // Vec3f difference = Vec3f::zero();
 
-  pos.x = tmp.x*cos(cartesian_rotation) - tmp.y*sin(cartesian_rotation);
-  pos.y = tmp.x*sin(cartesian_rotation) + tmp.y*cos(cartesian_rotation);
-  if(debug(4))
-    printf("cartesian: %4.0f %4.0f %4.0f\n", pos.x, pos.y, pos.z);
+
+  // pos.y = pos.y * (isFlipped ? -1 : 1); // TODO: reenable?
+  Vec3f tmp = pos + zeroOffset + difference;
+  tmp = tmp.rotate(rotation, 'z');
+  pos = tmp;
 }
 
 void Leg::convert_back(Vec3f& pos){
-  Vec3f tmp;
-  tmp.x = pos.x*cos(-cartesian_rotation) - pos.y*sin(-cartesian_rotation);
-  tmp.y = pos.x*sin(-cartesian_rotation) + pos.y*cos(-cartesian_rotation);
-  tmp.z = pos.z;
-  if(debug(4))
-    printf("cartesian: %4.0f %4.0f %4.0f\n", tmp.x, tmp.y, tmp.z);
+  Vec3f zeroPos = centerOffset + zeroOffset;
+  Vec3f rotPos = zeroPos;
+  rotPos = rotPos.rotate(plane_rotation->y, 'y');
+  rotPos = rotPos.rotate(plane_rotation->x, 'x');
+  Vec3f difference = zeroPos - rotPos;
+  difference.y = difference.y  * (isFlipped ? -1 : 1);
 
-
-  pos = tmp - offset;
-  pos.y = pos.y * (isFlipped ? -1 : 1);
-  pos.z = tmp.z;
-  if(debug(4))
-    printf("cartesian: %4.0f %4.0f %4.0f\n", pos.x, pos.y, pos.z);
+  Vec3f tmp = pos;
+  tmp = tmp.rotate(-rotation, 'z');
+  pos = tmp - zeroOffset - difference;
+  // pos.y = pos.y * (isFlipped ? -1 : 1);
 }
 
 void Leg::set_cartesian(Vec3f pos){
-  if(debug(2))
+  if(debug(0))
     printf("%s (%4.0f %4.0f %4.0f)\n", name.c_str(), pos.x, pos.y, pos.z);
   convert(pos);
 
-  if(debug(4))
+  if(debug(0))
     printf("set xyz %4.0f %4.0f %4.0f\n",pos.x, pos.y, pos.z);
 
   this->pos = pos;

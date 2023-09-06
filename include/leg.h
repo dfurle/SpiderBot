@@ -8,16 +8,19 @@
 class Leg: public Debuggable{
 public:
   Servo i, m, o;
-  Vec3f pos, offset;
+  Vec3f pos, centerOffset, zeroOffset;
+  Vec3f* plane_rotation;
   std::string name;
-  float cartesian_rotation = 0;
   bool isFlipped = false;
+  float rotation = 0;
 
   void set_debug(int new_debug_level);
 
-  Leg(int leg_bits);
+  Leg(int leg_bits, Vec3f* plane_rotation);
 
-  void set_offsets(float rot, float offx, float offy, bool flip = false);
+  void set_offsets(float rotation, Vec3f centerOffset, Vec3f zeroOffset, bool flip=false);
+  void set_plane(Vec3f plane_rotation);
+  // void set_offsets(float rot, float offx, float offy, bool flip = false);
   void convert(Vec3f& pos);
   void convert_back(Vec3f& pos);
 

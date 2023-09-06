@@ -34,12 +34,17 @@ int main(){
   algo::XYZ*   alg_xyz   = new algo::XYZ(&body);
   algo::Walk*  alg_walk  = new algo::Walk(&body);
 
-  alg_walk->init(100);
+
+  body.set_plane(Vec3f(0, -12, 0));
+
+
+
+  // alg_walk->init(100);
 
   while(true){
     // loop(alg_setup);
-    // loop(alg_xyz);
-    loop(alg_walk);
+    loop(alg_xyz);
+    // loop(alg_walk);
   }
 
   return 0;
