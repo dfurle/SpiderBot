@@ -59,7 +59,6 @@ Leg* Body::getLeg(int bits){
   return legs[leg%6]; // shouldnt overflow but just in case...
 }
 
-// only input single bit, get single servo
 Servo* Body::getServo(int bits){
   // maybe use strip since more modular?
   // int part = strip(bits, PART::ALL);

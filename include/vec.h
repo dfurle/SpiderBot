@@ -77,6 +77,19 @@ public:
     other.z = this->z - other.z;
     return other;
   }
+  
+  Vec3f operator-(){
+    Vec3f other;
+    other.x = -this->x;
+    other.y = -this->y;
+    other.z = -this->z;
+    return other;
+  }
+
+  Vec3f norm(){
+    float mag = 1/sqrt(this->x*this->x + this->y*this->y + this->z*this->z);
+    return (*this) * mag;
+  }
 
   Vec3f rotate(float angle, char axis){
     Vec3f tmp;
@@ -98,4 +111,6 @@ public:
     }
     return pos;
   }
+
+
 };

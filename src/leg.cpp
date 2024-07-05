@@ -54,7 +54,6 @@ void Leg::set_offsets(float rotation, Vec3f centerOffset, Vec3f zeroOffset, bool
 }
 
 
-
 // (old) https://www.desmos.com/calculator/pxnzvg15nf
 // (old) https://www.desmos.com/calculator/zwpvstzazw
 // https://www.desmos.com/calculator/yvtlskfmwz
