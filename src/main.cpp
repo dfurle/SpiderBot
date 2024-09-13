@@ -5,6 +5,7 @@
 #include "algorithms/alg_setup.h"
 #include "algorithms/alg_xyz.h"
 #include "algorithms/alg_walk.h"
+#include "algorithms/alg_joystick.h"
 
 
 Global g;
@@ -28,23 +29,22 @@ int main(){
   // body.setScaling(170./155., LEG::ML | PART::OUTER);
   // body.setScaling(165./155., LEG::RL | PART::OUTER);
 
-
-
-  algo::Setup* alg_setup = new algo::Setup(&body);
-  algo::XYZ*   alg_xyz   = new algo::XYZ(&body);
+  // algo::Setup* alg_setup = new algo::Setup(&body);
+  // algo::XYZ*   alg_xyz   = new algo::XYZ(&body);
   algo::Walk*  alg_walk  = new algo::Walk(&body);
+  // algo::JoystickMove* alg_joystick = new algo::JoystickMove(&body);
+  // alg_joystick->init(100);
 
-
-  body.set_plane(Vec3f(0, -12, 0));
-
-
-
-  // alg_walk->init(100);
+  // body.set_plane(Vec3f(-10, 0, 0));
+  // body.set_plane(Vec3f(0, 0, 20));
+  body.set_plane(Vec3f(0, 0, 0));
+  alg_walk->init(100);
 
   while(true){
     // loop(alg_setup);
-    loop(alg_xyz);
-    // loop(alg_walk);
+    // loop(alg_xyz);
+    loop(alg_walk);
+    // loop(alg_joystick);
   }
 
   return 0;

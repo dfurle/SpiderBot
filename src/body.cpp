@@ -1,5 +1,6 @@
 #include "body.h"
 #include <sys/time.h>
+#include <chrono>
 
 Body::Body(){
 
@@ -33,13 +34,13 @@ void Body::initialize(){
   // legs[id_ML]->set_offsets(90,  0, mi, true);
   // legs[id_RL]->set_offsets(135, -si_x, si_y, true);
 
-  legs[id_FR]->set_offsets(-45,  Vec3f( 70, 55, 0), Vec3f(si_x, si_y, 0));
-  legs[id_MR]->set_offsets(-90,  Vec3f(  0, 85, 0), Vec3f(0, mi, 0));
-  legs[id_RR]->set_offsets(-135, Vec3f(-70, 55, 0), Vec3f(-si_x, si_y, 0));
+  legs[id_FR]->set_offsets(-45,  Vec3f(55, 70, 0), Vec3f(si_x, si_y, 0), 0.5);
+  legs[id_MR]->set_offsets(-90,  Vec3f(85,  0, 0), Vec3f(mi, 0, 0), 0.0);
+  legs[id_RR]->set_offsets(-135, Vec3f(55,-70, 0), Vec3f(si_x, -si_y, 0), 0.5);
 
-  legs[id_FL]->set_offsets(45,  Vec3f( 70, -55, 0), Vec3f(si_x, si_y, 0), true);
-  legs[id_ML]->set_offsets(90,  Vec3f(  0, -85, 0), Vec3f(0, mi, 0), true);
-  legs[id_RL]->set_offsets(135, Vec3f(-70, -55, 0), Vec3f(-si_x, si_y, 0), true);
+  legs[id_FL]->set_offsets(45,  Vec3f(-55, 70, 0), Vec3f(-si_x, si_y, 0), 0.0, true);
+  legs[id_ML]->set_offsets(90,  Vec3f(-85,  0, 0), Vec3f(-mi, 0, 0), 0.5, true);
+  legs[id_RL]->set_offsets(135, Vec3f(-55,-70, 0), Vec3f(-si_x, -si_y, 0), 0.0, true);
 }
 
 void Body::set_plane(Vec3f plane_rotation){
@@ -100,22 +101,6 @@ void Body::runForServos(Func f, int bits){
 }
 
 
-template<typename Func>
-void Body::runForLegs(Func f, int bits){
-  int leg  = g.strip(bits, LEG::ALL);
-
-  if(!leg){
-    printf("Missing inputs\n");
-  }
-
-  int bit_l = 1<<LEG::MIN;
-  for(int l = 0; l < 6; l++){ // 6 legs
-    if(leg & bit_l){
-      f(getLeg(leg & bit_l));
-    }
-    bit_l <<= 1;
-  }
-}
 
 
 void Body::setLimits(int min, int max, int bits){
@@ -137,32 +122,113 @@ void Body::moveXYZ(Vec3f pos, int leg_bits){
     }, leg_bits);
 }
 
+void Body::updateAll(float t){
+  runForLegs([&](Leg* l){
+    l->update(t);
+  }, LEG::ALL);
+}
+
 // May not be well optimized... but should work?
-void Body::moveXYZ_speed(Vec3f target, float time_to_complete, int leg_bits){
+void Body::setXYZ_speed(Vec3f target, float time_to_complete, int leg_bits, bool ignore_z){
   float current_time = 0;
-  Vec3f delta = target * (10. / time_to_complete); // get delta per iteration
-  
-  // while(current_time < time_to_complete){
-  //   moveXYZ(delta, leg_bits);
-  //   usleep(100e3); // 100ms
-  //   current_time += 100.; // experiment, maybe it doesnt sleep for 10ms or something?
-  // }
+  Vec3f initials[6];
+  Vec3f finals[6];
+  for(int i = 0; i < 6; i++){
+    initials[i] = getLeg(1 << i)->pos;
+    finals[i] = target;
+    if(ignore_z)
+      finals[i].z = initials[i].z;
+  }
 
-
-  struct timeval  tv1, tv2;
   while(current_time < time_to_complete){
-    moveXYZ(delta, leg_bits);
-    gettimeofday(&tv1, NULL);
+    for(int i = 0; i < 6; i++){
+      if((leg_bits & (1<<i)) != 0){
+        Vec3f o = g.lerp(current_time / time_to_complete, initials[i], finals[i]);
+        setXYZ(o, 1 << i);
+      }
+    }
+    auto start = std::chrono::high_resolution_clock::now();
     float timePassed = 0;
     // Very jank code to make the most precise timing... sometimes it takes too long in the sleep/ or idk and slows down the movement
     do{
       usleep(1);
-      gettimeofday(&tv2, NULL);
-      timePassed = (float) (tv2.tv_usec - tv1.tv_usec) + (float) (tv2.tv_sec - tv1.tv_sec) * 1e6;
+      auto end = std::chrono::high_resolution_clock::now();
+      timePassed = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     }while(timePassed < 10e3); // 10ms
-    current_time += 10.; // experiment, maybe it doesnt sleep for 10ms or something?
+    printf("timePassed %f\n", timePassed / 1e3);
+    current_time += (timePassed / 1e3); // experiment, maybe it doesnt sleep for 10ms or something?
+  }
+  for(int i = 0; i < 6; i++){
+    if((leg_bits & (1<<i)) != 0){
+      setXYZ(finals[i], 1 << i);
+    }
   }
 }
+
+
+// May not be well optimized... but should work?
+void Body::moveXYZ_speed(Vec3f pos, float time_to_complete, int leg_bits, bool ignore_z){
+  float current_time = 0;
+  Vec3f initials[6];
+  Vec3f finals[6];
+  for(int i = 0; i < 6; i++){
+    initials[i] = getLeg(1 << i)->pos;
+    finals[i] = getLeg(1 << i)->pos + pos;
+    if(ignore_z)
+      finals[i].z = initials[i].z;
+  }
+
+  while(current_time < time_to_complete){
+    for(int i = 0; i < 6; i++){
+      if((leg_bits & (1<<i)) != 0){
+        Vec3f o = g.lerp(current_time / time_to_complete, initials[i], finals[i]);
+        setXYZ(o, 1 << i);
+      }
+    }
+    float timePassed = 0;
+    auto start = std::chrono::high_resolution_clock::now();
+    // Very jank code to make the most precise timing... sometimes it takes too long in the sleep/ or idk and slows down the movement
+    do{
+      usleep(1);
+      auto end = std::chrono::high_resolution_clock::now();
+      timePassed = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    }while(timePassed < 10e3); // 10ms
+    printf("timePassed %f\n", timePassed / 1e3);
+    current_time += (timePassed / 1e3); // experiment, maybe it doesnt sleep for 10ms or something?
+  }
+  for(int i = 0; i < 6; i++){
+    if((leg_bits & (1<<i)) != 0){
+      setXYZ(finals[i], 1 << i);
+    }
+  }
+}
+
+// // May not be well optimized... but should work?
+// void Body::moveXYZ_speed(Vec3f pos, float time_to_complete, int leg_bits){
+//   float current_time = 0;
+//   Vec3f delta = pos * (10. / time_to_complete); // get delta per iteration
+  
+//   // while(current_time < time_to_complete){
+//   //   moveXYZ(delta, leg_bits);
+//   //   usleep(100e3); // 100ms
+//   //   current_time += 100.; // experiment, maybe it doesnt sleep for 10ms or something?
+//   // }
+
+
+//   struct timeval  tv1, tv2;
+//   while(current_time < time_to_complete){
+//     moveXYZ(delta, leg_bits);
+//     gettimeofday(&tv1, NULL);
+//     float timePassed = 0;
+//     // Very jank code to make the most precise timing... sometimes it takes too long in the sleep/ or idk and slows down the movement
+//     do{
+//       usleep(1);
+//       gettimeofday(&tv2, NULL);
+//       timePassed = (float) (tv2.tv_usec - tv1.tv_usec) + (float) (tv2.tv_sec - tv1.tv_sec) * 1e6;
+//     }while(timePassed < 10e3); // 10ms
+//     current_time += 10.; // experiment, maybe it doesnt sleep for 10ms or something?
+//   }
+// }
 
 // void Body::moveXYZ_speed(Vec3f pos, float time_to_complete, int leg_bits){
 //   runForLegs([&](Leg* l){l->move_cartesian(pos);}, leg_bits);

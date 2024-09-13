@@ -6,7 +6,9 @@
 #include <unistd.h>
 #include <map>
 #include <iostream>
+#include <vector>
 #include <string>
+#include <vec.h>
 
 // --- TODO: figure out what is best to use with many servos. ---
 #define LMIN 0.5f  // 80
@@ -123,6 +125,34 @@ public:
   template<class T>
   const T map(const T& x, const T& in_min, const T& in_max, const T& out_min, const T& out_max) {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  }
+
+
+  // Linear interpolation function from current 
+  // @param t [0-1] interpolation parameter
+  // @param start start point of interpolation
+  // @param end end point of interpolation
+  Vec3f lerp(float t, Vec3f start, Vec3f end){
+    if(t >= 1.0f){
+      return end;
+    }
+    if(t <= 0.0f){
+      return start;
+    }
+    return ((end - start) * t) + start;
+  }
+
+  Vec3f multi_lerp(std::vector<Vec3f> pts, float t){
+    if(t >= 1.0f){
+      return pts[pts.size()-1];
+    }
+    if(t <= 0.0f){
+      return pts[0];
+    }
+    t = t * pts.size();
+    int it = t;
+    t = fmod(t, 1.0);
+    return lerp(t, pts[it], pts[(it+1)%pts.size()]);
   }
 };
 

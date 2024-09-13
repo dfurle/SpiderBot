@@ -32,8 +32,8 @@ public:
     std::string tmp;
     std::getline(std::cin, tmp);
     body->setXYZ(Vec3f::zero(), LEG::ALL);
-    std::getline(std::cin, tmp);
-    body->moveXYZ(-joystick * max_move_dist, COMMON::TRI_RIGHT);
+    // std::getline(std::cin, tmp);
+    // body->moveXYZ(-joystick * max_move_dist, COMMON::TRI_RIGHT);
     std::getline(std::cin, tmp);
     body->moveXYZ(Vec3f::up(height), LEG::ALL);
     std::getline(std::cin, tmp);
@@ -65,6 +65,16 @@ public:
     printf("Lower Left\n");
     body->moveXYZ(Vec3f::up(raise_height), COMMON::TRI_LEFT);
     std::getline(std::cin, tmp);
+    try{
+      int a = std::stoi(tmp);
+      joystick.x = cos(a);
+      joystick.y = sin(a);
+
+      joystick = joystick.norm() * 0.5;
+    } catch(std::invalid_argument& e){
+    } catch(...){
+      printf("Unknown error\n");
+    }
     printf("\n");
 
     printf("\n\n");

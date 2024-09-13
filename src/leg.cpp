@@ -26,6 +26,8 @@ o(leg_bits | PART::OUTER)
     case LEG::REAR_LEFT:
       name = "RL"; break;
   }
+
+  // this->set_debug(5);
 };
 
 void Leg::set_debug(int new_debug_level){
@@ -42,15 +44,18 @@ void Leg::set_debug(int new_debug_level){
 //   this->offset.y = offy * (isFlipped ? -1 : 1);
 // }
 
-void Leg::set_offsets(float rotation, Vec3f centerOffset, Vec3f zeroOffset, bool flip){
+void Leg::set_offsets(float rotation, Vec3f centerOffset, Vec3f zeroOffset, float t_offset, bool flip){
   this->isFlipped = flip;
 
   // centerOffset.y *= (isFlipped ? -1 : 1);
-  zeroOffset.y   *= (isFlipped ? -1 : 1);
+  // zeroOffset.y   *= (isFlipped ? -1 : 1);
+  // zeroOffset.y
 
   this->centerOffset = centerOffset;
   this->zeroOffset = zeroOffset;
   this->rotation = rotation * DEG_TO_RAD;
+
+  this->t_offset = t_offset;
 }
 
 
@@ -92,84 +97,67 @@ void Leg::calcAngles(float theta, float r, float height){
   }
   set_angles(innerA, middleA, outerA);
 }
-// void Leg::convert(Vec3f& pos){
-//   pos.y = pos.y * (isFlipped ? -1 : 1);
-//   Vec3f tmp = pos + offset;
-//   if(debug(4))
-//     printf("cartesian: %4.0f %4.0f %4.0f\n", tmp.x, tmp.y, tmp.z);
 
-//   pos.x = tmp.x*cos(cartesian_rotation) - tmp.y*sin(cartesian_rotation);
-//   pos.y = tmp.x*sin(cartesian_rotation) + tmp.y*cos(cartesian_rotation);
-//   if(debug(4))
-//     printf("cartesian: %4.0f %4.0f %4.0f\n", pos.x, pos.y, pos.z);
-// }
-
-// void Leg::convert_back(Vec3f& pos){
-//   Vec3f tmp;
-//   tmp.x = pos.x*cos(-cartesian_rotation) - pos.y*sin(-cartesian_rotation);
-//   tmp.y = pos.x*sin(-cartesian_rotation) + pos.y*cos(-cartesian_rotation);
-//   tmp.z = pos.z;
-//   if(debug(4))
-//     printf("cartesian: %4.0f %4.0f %4.0f\n", tmp.x, tmp.y, tmp.z);
-
-
-//   pos = tmp - offset;
-//   pos.y = pos.y * (isFlipped ? -1 : 1);
-//   pos.z = tmp.z;
-//   if(debug(4))
-//     printf("cartesian: %4.0f %4.0f %4.0f\n", pos.x, pos.y, pos.z);
-// }
-
-
+void Leg::update(float t){
+  t = (t + this->t_offset);
+  t = (t >= 1 ? t-1 : t);
+  Vec3f pos = g.multi_lerp(this->pts, t);
+  // printf("%s - lerping: (%4.0f %4.0f %4.0f)\n", this->name.c_str(), pos.x, pos.y, pos.z);
+  this->set_cartesian(pos);
+}
 
 void Leg::convert(Vec3f& pos){
-  Vec3f zeroPos = centerOffset + zeroOffset;
-  Vec3f rotPos = zeroPos;
-  // if(debug(0))
-  //   printf(" cartesian: %4.0f %4.0f %4.0f\n", rotPos.x, rotPos.y, rotPos.z);
-  rotPos = rotPos.rotate(plane_rotation->y, 'y');
-  rotPos = rotPos.rotate(plane_rotation->x, 'x');
-  // if(debug(0))
-  //   printf(" rotated cartesian: %4.0f %4.0f %4.0f\n", rotPos.x, rotPos.y, rotPos.z);
-  Vec3f difference = zeroPos - rotPos;
-  difference.y = difference.y  * (isFlipped ? -1 : 1);
-  // if(debug(0))
-  //   printf(" flip diff: %4.0f %4.0f %4.0f\n", difference.x, difference.y, difference.z);
-  // Vec3f difference = Vec3f::zero();
-
-
-  // pos.y = pos.y * (isFlipped ? -1 : 1); // TODO: reenable?
-  Vec3f tmp = pos + zeroOffset + difference;
-  tmp = tmp.rotate(rotation, 'z');
-  pos = tmp;
+  this->pos = pos;
+  if(debug(4))
+    printf(" pos in   (%4.0f %4.0f %4.0f)\n", pos.x, pos.y, pos.z);
+  Vec3f newPos = pos + this->centerOffset + this->zeroOffset;
+  if(debug(4))
+    printf(" pos add  (%4.0f %4.0f %4.0f)\n", newPos.x, newPos.y, newPos.z);
+  newPos = newPos.rotate(this->plane_rotation->x, 'x');
+  newPos = newPos.rotate(this->plane_rotation->y, 'y');
+  newPos = newPos.rotate(this->plane_rotation->z, 'z');
+  if(debug(4))
+    printf(" pos rot1 (%4.0f %4.0f %4.0f)\n", newPos.x, newPos.y, newPos.z);
+  Vec3f local = newPos - this->centerOffset;
+  if(debug(4))
+    printf(" pos sub  (%4.0f %4.0f %4.0f)\n", local.x, local.y, local.z);
+  local = local.rotate(-rotation, 'z');
+  if(debug(4))
+    printf(" pos rot2 (%4.0f %4.0f %4.0f)\n", local.x, local.y, local.z);
+  this->lpos = local;
+  pos = local;
 }
 
-void Leg::convert_back(Vec3f& pos){
-  Vec3f zeroPos = centerOffset + zeroOffset;
-  Vec3f rotPos = zeroPos;
-  rotPos = rotPos.rotate(plane_rotation->y, 'y');
-  rotPos = rotPos.rotate(plane_rotation->x, 'x');
-  Vec3f difference = zeroPos - rotPos;
-  difference.y = difference.y  * (isFlipped ? -1 : 1);
+// void Leg::convert_back(Vec3f& pos){
+//   Vec3f zeroPos = centerOffset + zeroOffset;
+//   Vec3f rotPos = zeroPos;
+//   rotPos = rotPos.rotate(plane_rotation->y, 'y');
+//   rotPos = rotPos.rotate(plane_rotation->x, 'x');
+//   Vec3f difference = zeroPos - rotPos;
+//   difference.y = difference.y  * (isFlipped ? -1 : 1);
 
-  Vec3f tmp = pos;
-  tmp = tmp.rotate(-rotation, 'z');
-  pos = tmp - zeroOffset - difference;
-  // pos.y = pos.y * (isFlipped ? -1 : 1);
-}
+//   Vec3f tmp = pos;
+//   tmp = tmp.rotate(-rotation, 'z');
+//   pos = tmp - zeroOffset - difference;
+//   // pos.y = pos.y * (isFlipped ? -1 : 1);
+// }
 
 void Leg::set_cartesian(Vec3f pos){
-  if(debug(0))
+  if(debug(1))
     printf("%s (%4.0f %4.0f %4.0f)\n", name.c_str(), pos.x, pos.y, pos.z);
   convert(pos);
+  if(debug(1))
+    printf(" set xyz %4.0f %4.0f %4.0f\n",pos.x, pos.y, pos.z);
 
-  if(debug(0))
-    printf("set xyz %4.0f %4.0f %4.0f\n",pos.x, pos.y, pos.z);
-
-  this->pos = pos;
+  // this->pos = pos;
   
   float r = sqrt(pos.x*pos.x + pos.y*pos.y);
-  float theta = atan2(-pos.y,pos.x) * RAD_TO_DEG;
+  // float theta = atan2(-pos.y,pos.x) * RAD_TO_DEG;
+  float theta = atan2(-pos.x,pos.y) * RAD_TO_DEG;
+
+  // if(this->isFlipped){
+  //   theta *= -1;
+  // }
 
   debug(5, " catesian      r = ", r);
   debug(5, " cartesian theta = ", theta);
@@ -183,25 +171,11 @@ void Leg::set_cartesian(Vec3f pos){
 }
 
 void Leg::move_cartesian(Vec3f pos){
-  Vec3f tmp = this->pos;
-  convert_back(tmp);
+  pos = this->pos + pos;
   if(debug(4))
-    printf("tmp: xyz %f %f %f\n",tmp.x, tmp.y, tmp.z);
-  tmp += pos;
-  set_cartesian(tmp);
+    printf("tmp: xyz %f %f %f\n",pos.x, pos.y, pos.z);
+  set_cartesian(pos);
 }
-
-// Gonna try to implement this in Body class first
-// void Leg::move_cartesian_speed(Vec3f target, float time_to_complete){
-//   float current_time = 0;
-//   Vec3f delta = target * (10 / time_to_complete); // get delta per iteration
-  
-//   while(current_time < time_to_complete){
-//     move_cartesian(delta);
-//     usleep(10000); // 10ms
-//     current_time += 10; // experiment, maybe it doesnt sleep for 10ms or something?
-//   }
-// }
 
 void Leg::test_set_r(float r, float height){
 

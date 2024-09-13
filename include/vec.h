@@ -1,6 +1,5 @@
 #pragma once
 
-
 class Vec3f{
 public:
 
@@ -110,6 +109,18 @@ public:
       printf("unknown axis!\n\n");
     }
     return pos;
+  }
+
+  operator std::string(){
+    std::string str = "";
+    str += "<";
+    str += std::to_string(x);
+    str += ",";
+    str += std::to_string(y);
+    str += ",";
+    str += std::to_string(z);
+    str += ">";
+    return str;
   }
 
 

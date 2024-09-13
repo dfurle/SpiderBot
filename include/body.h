@@ -31,11 +31,28 @@ public:
   // @param bits the masking bit string to select leg/servo '000 000000' with mapping/constants seen in global.h
   void runForServos(Func f, int bits);
 
+  // template<typename Func>
+  // // Runs inputted lambda function for all legs
+  // // @param f function takes "Leg" class as parameter that is provided to it
+  // // @param bits the masking bit string to select leg/servo '000 000000' with mapping/constants seen in global.h
+  // void runForLegs(Func f, int bits);
+
   template<typename Func>
-  // Runs inputted lambda function for all legs
-  // @param f function takes "Leg" class as parameter that is provided to it
-  // @param bits the masking bit string to select leg/servo '000 000000' with mapping/constants seen in global.h
-  void runForLegs(Func f, int bits);
+  void runForLegs(Func f, int bits){
+    int leg  = g.strip(bits, LEG::ALL);
+
+    if(!leg){
+      printf("Missing inputs\n");
+    }
+
+    int bit_l = 1<<LEG::MIN;
+    for(int l = 0; l < 6; l++){ // 6 legs
+      if(leg & bit_l){
+        f(getLeg(leg & bit_l));
+      }
+      bit_l <<= 1;
+    }
+  }
 
   // Sets limits on the servos with given bits as seen in global.h
   // @param min minimum angle in degrees for initialization for servo (it will never go below this value, and the mathematical 0 is this value)
@@ -58,15 +75,25 @@ public:
   // @param bits the bitmask given in global.h (only cares about legs)
   void moveXYZ(Vec3f pos, int bits);
 
+  // Sets XYZ using inverse kinematics for servos given by bit mask with a slowed down speed
+  // @param target the Vec3f to move to
+  // @param time_to_complete "time to complete" action in ms
+  // @param bits the bitmask given in global.h (only cares about legs)
+  void setXYZ_speed(Vec3f target, float time_to_complete, int leg_bits, bool ignore_z = false);
+
   // Moves by XYZ using inverse kinematics for servos given by bit mask with a slowed down speed
   // @param pos the Vec3f to move the current position by
-  // @param speed this is technically "time_to_complete" in ms
+  // @param time_to_complete "time to complete" action in ms
   // @param bits the bitmask given in global.h (only cares about legs)
-  void moveXYZ_speed(Vec3f pos, float speed, int leg_bits);
+  void moveXYZ_speed(Vec3f pos, float time_to_complete, int leg_bits, bool ignore_z = false);
 
   // Sets the scaling of angle on servos;
   //  Basically if mathematically input angle is 90deg, it is scaled by "scaling" to input further into servo
   // @param scaling the multiplier
   // @param bits the bitmask given in global.h
   void setScaling(float scaling, int bits);
+
+
+  void updateAll(float t);
+
 };
